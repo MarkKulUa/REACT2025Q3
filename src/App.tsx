@@ -4,6 +4,7 @@ import { PokemonApi } from './services/pokemonApi';
 import ErrorBoundary from './components/ErrorBoundary';
 import Header from './components/Header';
 import Main from './components/Main';
+import styles from './App.module.css';
 import './App.css';
 
 interface AppState {
@@ -48,13 +49,7 @@ class App extends Component<Record<string, never>, AppState> {
 
     return (
       <ErrorBoundary>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '100vh',
-          }}
-        >
+        <div className={styles.appContainer}>
           <Header onSearch={this.handleSearch} isLoading={isLoading} />
           <Main pokemon={pokemon} isLoading={isLoading} error={error} />
         </div>

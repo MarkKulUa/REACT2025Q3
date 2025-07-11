@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import type { ReactNode } from 'react';
+import styles from './ErrorBoundary.module.css';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -27,39 +28,17 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <div
-          style={{
-            padding: '20px',
-            textAlign: 'center',
-            border: '1px solid #f5c6cb',
-            backgroundColor: '#f8d7da',
-            color: '#721c24',
-            borderRadius: '4px',
-            margin: '20px',
-          }}
-        >
-          <h2>Something went wrong!</h2>
-          <p>An error occurred in the application.</p>
-          <details
-            style={{
-              whiteSpace: 'pre-wrap',
-              textAlign: 'left',
-              marginTop: '10px',
-            }}
-          >
+        <div className={styles.errorContainer}>
+          <h2 className={styles.errorTitle}>Something went wrong!</h2>
+          <p className={styles.errorMessage}>
+            An error occurred in the application.
+          </p>
+          <details className={styles.errorDetails}>
             {this.state.error && this.state.error.toString()}
           </details>
           <button
             onClick={() => this.setState({ hasError: false, error: undefined })}
-            style={{
-              marginTop: '10px',
-              padding: '8px 16px',
-              backgroundColor: '#721c24',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
+            className={styles.retryButton}
           >
             Try again
           </button>

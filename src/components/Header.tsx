@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import styles from './Header.module.css';
 
 interface HeaderState {
   searchTerm: string;
@@ -52,17 +53,7 @@ class Header extends Component<HeaderProps, HeaderState> {
 
   render(): React.ReactNode {
     return (
-      <div
-        style={{
-          padding: '20px',
-          backgroundColor: '#f8f9fa',
-          borderBottom: '1px solid #dee2e6',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '10px',
-        }}
-      >
+      <div className={styles.headerContainer}>
         <input
           type="text"
           value={this.state.searchTerm}
@@ -70,28 +61,12 @@ class Header extends Component<HeaderProps, HeaderState> {
           onKeyPress={this.handleKeyPress}
           placeholder="Search Pokemon..."
           disabled={this.props.isLoading}
-          style={{
-            padding: '10px',
-            fontSize: '16px',
-            border: '1px solid #ced4da',
-            borderRadius: '4px',
-            width: '300px',
-            outline: 'none',
-          }}
+          className={styles.searchInput}
         />
         <button
           onClick={this.handleSearch}
           disabled={this.props.isLoading}
-          style={{
-            padding: '10px 20px',
-            fontSize: '16px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: this.props.isLoading ? 'not-allowed' : 'pointer',
-            opacity: this.props.isLoading ? 0.6 : 1,
-          }}
+          className={styles.searchButton}
         >
           {this.props.isLoading ? 'Searching...' : 'Search'}
         </button>

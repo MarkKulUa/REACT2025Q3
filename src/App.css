@@ -1,3 +1,5 @@
+/* Global styles for the Pokemon Search App */
+
 * {
   margin: 0;
   padding: 0;
@@ -17,52 +19,13 @@ body {
   min-height: 100vh;
 }
 
-/* Spinner animation */
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+/* Global focus styles for accessibility */
+*:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
 }
 
-/* Button hover effects */
-button:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-  transition: all 0.2s ease;
-}
-
-button:active {
-  transform: translateY(0);
-}
-
-/* Input focus effects */
-input:focus {
-  border-color: #007bff !important;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-/* Card hover effects */
-.card-hover {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  input[style*='width: 300px'] {
-    width: 200px !important;
-  }
-
-  div[style*='gridTemplateColumns'] {
-    grid-template-columns: 1fr !important;
-  }
+/* Remove outline for mouse users */
+.js-focus-visible *:focus:not(.focus-visible) {
+  outline: none;
 }

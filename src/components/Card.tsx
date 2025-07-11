@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import type { Pokemon, PokemonDetails } from '../types/pokemon';
 import { PokemonApi } from '../services/pokemonApi';
+import styles from './Card.module.css';
 
 interface CardState {
   details: PokemonDetails | null;
@@ -47,25 +48,10 @@ class Card extends Component<CardProps, CardState> {
 
     if (isLoading) {
       return (
-        <div
-          style={{
-            border: '1px solid #dee2e6',
-            borderRadius: '8px',
-            padding: '16px',
-            margin: '8px',
-            backgroundColor: '#f8f9fa',
-            display: 'flex',
-            alignItems: 'center',
-            minHeight: '100px',
-          }}
-        >
-          <div style={{ marginLeft: '16px' }}>
-            <div
-              style={{ fontSize: '18px', fontWeight: 'bold', color: '#6c757d' }}
-            >
-              Loading...
-            </div>
-            <div style={{ fontSize: '14px', color: '#6c757d' }}>
+        <div className={`${styles.cardContainer} ${styles.loadingCard}`}>
+          <div className={styles.cardContent}>
+            <div className={styles.loadingText}>Loading...</div>
+            <div className={styles.loadingSubtext}>
               Fetching Pokemon details
             </div>
           </div>
@@ -75,20 +61,11 @@ class Card extends Component<CardProps, CardState> {
 
     if (error) {
       return (
-        <div
-          style={{
-            border: '1px solid #f5c6cb',
-            borderRadius: '8px',
-            padding: '16px',
-            margin: '8px',
-            backgroundColor: '#f8d7da',
-            color: '#721c24',
-          }}
-        >
-          <div style={{ fontSize: '18px', fontWeight: 'bold' }}>
-            {pokemon.name}
+        <div className={`${styles.cardContainer} ${styles.errorCard}`}>
+          <div className={styles.cardContent}>
+            <div className={styles.errorTitle}>{pokemon.name}</div>
+            <div className={styles.errorMessage}>Error: {error}</div>
           </div>
-          <div style={{ fontSize: '14px' }}>Error: {error}</div>
         </div>
       );
     }
@@ -101,38 +78,17 @@ class Card extends Component<CardProps, CardState> {
     const description = `Height: ${details.height / 10}m, Weight: ${details.weight / 10}kg, Types: ${types}`;
 
     return (
-      <div
-        style={{
-          border: '1px solid #dee2e6',
-          borderRadius: '8px',
-          padding: '16px',
-          margin: '8px',
-          backgroundColor: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}
-      >
+      <div className={styles.cardContainer}>
         {details.sprites.front_default && (
           <img
             src={details.sprites.front_default}
             alt={pokemon.name}
-            style={{ width: '64px', height: '64px' }}
+            className={styles.pokemonImage}
           />
         )}
-        <div style={{ marginLeft: '16px', flex: 1 }}>
-          <div
-            style={{
-              fontSize: '18px',
-              fontWeight: 'bold',
-              textTransform: 'capitalize',
-            }}
-          >
-            {pokemon.name}
-          </div>
-          <div style={{ fontSize: '14px', color: '#6c757d', marginTop: '4px' }}>
-            {description}
-          </div>
+        <div className={styles.cardContent}>
+          <div className={styles.pokemonName}>{pokemon.name}</div>
+          <div className={styles.pokemonDescription}>{description}</div>
         </div>
       </div>
     );
