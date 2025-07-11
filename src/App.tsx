@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { Component } from 'react';
+import type { Pokemon } from './types/pokemon';
+import { PokemonApi } from './services/pokemonApi';
+import ErrorBoundary from './components/ErrorBoundary';
+import Header from './components/Header';
+import Main from './components/Main';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface AppState {
+  pokemon: Pokemon[];
+  isLoading: boolean;
+  error: string | null;
 }
 
-export default App
+class App extends Component<Record<string, never>, AppState> {
+  constructor(props: Record<string, never>) {
+    super(props);
+    this.state = {
+      pokemon: [],
+      isLoading: false,
+      error: null,
+    };
+  }
+
+  handleSearch = async (searchTerm: string): Promise<void> => {
+    this.setState({ isLoading: true, error: null });
+
+    try {
+      const response = await PokemonApi.searchPokemon(searchTerm, 20);
+      this.setState({
+        pokemon: response.results,
+        isLoading: false,
+        error: null,
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error occurred';
+      this.setState({
+        pokemon: [],
+        isLoading: false,
+        error: errorMessage,
+      });
+    }
+  };
+
+  render(): React.ReactNode {
+    const { pokemon, isLoading, error } = this.state;
+
+    return (
+      <ErrorBoundary>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
+          }}
+        >
+          <Header onSearch={this.handleSearch} isLoading={isLoading} />
+          <Main pokemon={pokemon} isLoading={isLoading} error={error} />
+        </div>
+      </ErrorBoundary>
+    );
+  }
+}
+
+export default App;
