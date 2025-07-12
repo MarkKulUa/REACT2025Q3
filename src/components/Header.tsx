@@ -58,7 +58,7 @@ class Header extends Component<HeaderProps, HeaderState> {
           type="text"
           value={this.state.searchTerm}
           onChange={this.handleInputChange}
-          onKeyPress={this.handleKeyPress}
+          onKeyDown={this.handleKeyPress}
           placeholder="Search Pokemon..."
           disabled={this.props.isLoading}
           className={styles.searchInput}

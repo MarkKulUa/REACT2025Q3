@@ -44,6 +44,13 @@ class App extends Component<Record<string, never>, AppState> {
     }
   };
 
+  handleError = (error: Error | string): void => {
+    const errorMessage = error instanceof Error ? error.message : error;
+    this.setState({
+      error: errorMessage,
+    });
+  };
+
   render(): React.ReactNode {
     const { pokemon, isLoading, error } = this.state;
 
@@ -51,7 +58,12 @@ class App extends Component<Record<string, never>, AppState> {
       <ErrorBoundary>
         <div className={styles.appContainer}>
           <Header onSearch={this.handleSearch} isLoading={isLoading} />
-          <Main pokemon={pokemon} isLoading={isLoading} error={error} />
+          <Main
+            pokemon={pokemon}
+            isLoading={isLoading}
+            error={error}
+            onError={this.handleError}
+          />
         </div>
       </ErrorBoundary>
     );

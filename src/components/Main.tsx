@@ -7,11 +7,12 @@ interface MainProps {
   pokemon: Pokemon[];
   isLoading: boolean;
   error: string | null;
+  onError: (error: Error | string) => void;
 }
 
 class Main extends Component<MainProps> {
   throwError = (): void => {
-    throw new Error('Test error for ErrorBoundary!');
+    this.props.onError(new Error('Test error for ErrorBoundary!'));
   };
 
   render(): React.ReactNode {
