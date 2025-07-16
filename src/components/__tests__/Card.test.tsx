@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '../../__tests__/test-utils';
+import { act } from '@testing-library/react';
 import Card from '../Card';
 import { PokemonApi } from '../../services/pokemonApi';
 import { mockPokemonDetails } from '../../__tests__/mocks/pokemonApi';
@@ -87,7 +88,7 @@ describe('Card Component', () => {
   });
 
   describe('API Integration Tests', () => {
-    it('calls API with correct pokemon name', () => {
+    it('calls API with correct pokemon name', async () => {
       vi.mocked(PokemonApi.getPokemonDetails).mockResolvedValue(
         mockPokemonDetails
       );
@@ -97,6 +98,11 @@ describe('Card Component', () => {
       expect(PokemonApi.getPokemonDetails).toHaveBeenCalledWith(
         mockPokemon.name
       );
+
+      // Wait for async state updates to complete
+      await waitFor(() => {
+        expect(PokemonApi.getPokemonDetails).toHaveBeenCalled();
+      });
     });
 
     it('handles API success response correctly', async () => {
@@ -145,14 +151,17 @@ describe('Card Component', () => {
       });
     });
 
-    it('handles API call only once on mount', () => {
+    it('handles API call only once on mount', async () => {
       vi.mocked(PokemonApi.getPokemonDetails).mockResolvedValue(
         mockPokemonDetails
       );
 
       render(<Card pokemon={mockPokemon} />);
 
-      expect(PokemonApi.getPokemonDetails).toHaveBeenCalledTimes(1);
+      // Wait for async state updates to complete
+      await waitFor(() => {
+        expect(PokemonApi.getPokemonDetails).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
@@ -182,7 +191,7 @@ describe('Card Component', () => {
       });
     });
 
-    it('shows loading state before error state', () => {
+    it('shows loading state before error state', async () => {
       let rejectFunction: ((reason?: unknown) => void) | undefined;
       vi.mocked(PokemonApi.getPokemonDetails).mockImplementation(
         () =>
@@ -196,9 +205,11 @@ describe('Card Component', () => {
       expect(screen.getByText('Loading...')).toBeInTheDocument();
 
       // Trigger the rejection
-      if (rejectFunction) {
-        rejectFunction(new Error('Test error'));
-      }
+      await act(async () => {
+        if (rejectFunction) {
+          rejectFunction(new Error('Test error'));
+        }
+      });
     });
   });
 });
