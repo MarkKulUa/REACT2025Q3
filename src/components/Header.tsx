@@ -1,78 +1,61 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 import styles from './Header.module.css';
-
-interface HeaderState {
-  searchTerm: string;
-}
 
 interface HeaderProps {
   onSearch: (searchTerm: string) => void;
   isLoading: boolean;
 }
 
-class Header extends Component<HeaderProps, HeaderState> {
-  private readonly STORAGE_KEY = 'pokemon-search-term';
+const Header: React.FC<HeaderProps> = ({ onSearch, isLoading }) => {
+  const STORAGE_KEY = 'pokemon-search-term';
+  const [searchTerm, setSearchTerm] = useLocalStorage(STORAGE_KEY, '');
 
-  constructor(props: HeaderProps) {
-    super(props);
-
-    // Load search term from localStorage
-    const savedSearchTerm = localStorage.getItem(this.STORAGE_KEY) || '';
-
-    this.state = {
-      searchTerm: savedSearchTerm,
-    };
-  }
-
-  componentDidMount(): void {
+  useEffect(() => {
     // Trigger initial search with saved term
-    this.props.onSearch(this.state.searchTerm);
-  }
+    onSearch(searchTerm);
+  }, [onSearch, searchTerm]);
 
-  handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState({
-      searchTerm: event.target.value,
-    });
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    setSearchTerm(event.target.value);
   };
 
-  handleSearch = (): void => {
-    const trimmedSearchTerm = this.state.searchTerm.trim();
-
-    // Save to localStorage
-    localStorage.setItem(this.STORAGE_KEY, trimmedSearchTerm);
-
-    // Trigger search
-    this.props.onSearch(trimmedSearchTerm);
+  const handleSearch = (): void => {
+    const trimmedSearchTerm = searchTerm.trim();
+    setSearchTerm(trimmedSearchTerm);
+    onSearch(trimmedSearchTerm);
   };
 
-  handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyPress = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ): void => {
     if (event.key === 'Enter') {
-      this.handleSearch();
+      handleSearch();
     }
   };
 
-  render(): React.ReactNode {
-    return (
-      <div className={styles.headerContainer}>
-        <input
-          type="text"
-          value={this.state.searchTerm}
-          onChange={this.handleInputChange}
-          onKeyDown={this.handleKeyPress}
-          placeholder="Search Pokemon..."
-          disabled={this.props.isLoading}
-          className={styles.searchInput}
-        />
-        <button
-          onClick={this.handleSearch}
-          disabled={this.props.isLoading}
-          className={styles.searchButton}
-        >
-          {this.props.isLoading ? 'Searching...' : 'Search'}
-        </button>
-      </div>
-    );
-  }
-}
+  return (
+    <div className={styles.headerContainer}>
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyPress}
+        placeholder="Search Pokemon..."
+        disabled={isLoading}
+        className={styles.searchInput}
+      />
+      <button
+        onClick={handleSearch}
+        disabled={isLoading}
+        className={styles.searchButton}
+      >
+        {isLoading ? 'Searching...' : 'Search'}
+      </button>
+    </div>
+  );
+};
 
 export default Header;
