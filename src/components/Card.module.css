@@ -1,0 +1,77 @@
+.cardContainer {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  min-height: 100px;
+}
+
+.cardContainer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.loadingCard {
+  background-color: #f8f9fa;
+}
+
+.errorCard {
+  border: 1px solid #f5c6cb;
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.pokemonImage {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.cardContent {
+  margin-left: 16px;
+  flex: 1;
+}
+
+.pokemonName {
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: capitalize;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.pokemonDescription {
+  font-size: 14px;
+  color: #6c757d;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.loadingText {
+  font-size: 18px;
+  font-weight: bold;
+  color: #6c757d;
+}
+
+.loadingSubtext {
+  font-size: 14px;
+  color: #6c757d;
+  margin-top: 4px;
+}
+
+.errorTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.errorMessage {
+  font-size: 14px;
+}
