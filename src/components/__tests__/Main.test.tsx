@@ -1,18 +1,19 @@
-import { render, screen, fireEvent } from '../../__tests__/test-utils';
+import { render, screen } from '../../__tests__/test-utils';
 import Main from '../Main';
-import { mockPokemonResponse } from '../../__tests__/mocks/pokemonApi';
 import type { Pokemon } from '../../types/pokemon';
 
-// Mock CardList component to isolate Main component testing
+// Mock CardList component
 vi.mock('../CardList', () => ({
   default: ({
     pokemon,
     isLoading,
     error,
+    onCardClick,
   }: {
     pokemon: Pokemon[];
     isLoading: boolean;
     error: string | null;
+    onCardClick?: (pokemon: Pokemon) => void;
   }) => (
     <div data-testid="cardlist-mock">
       {isLoading && <div>CardList Loading</div>}
@@ -20,12 +21,17 @@ vi.mock('../CardList', () => ({
       {!isLoading && !error && (
         <div>CardList with {pokemon.length} pokemon</div>
       )}
+      {onCardClick && (
+        <button onClick={() => onCardClick({ name: 'test', url: 'test' })}>
+          Test Card Click
+        </button>
+      )}
     </div>
   ),
 }));
 
 describe('Main Component', () => {
-  const mockOnError = vi.fn();
+  const mockOnCardClick = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -33,36 +39,22 @@ describe('Main Component', () => {
 
   describe('Rendering Tests', () => {
     it('renders CardList component with correct props', () => {
-      const pokemon = mockPokemonResponse.results;
+      const mockPokemon: Pokemon[] = [
+        { name: 'pikachu', url: 'https://pokeapi.co/api/v2/pokemon/25/' },
+        { name: 'charizard', url: 'https://pokeapi.co/api/v2/pokemon/6/' },
+      ];
 
       render(
         <Main
-          pokemon={pokemon}
+          pokemon={mockPokemon}
           isLoading={false}
           error={null}
-          onError={mockOnError}
+          onCardClick={mockOnCardClick}
         />
       );
 
       expect(screen.getByTestId('cardlist-mock')).toBeInTheDocument();
-      expect(
-        screen.getByText(`CardList with ${pokemon.length} pokemon`)
-      ).toBeInTheDocument();
-    });
-
-    it('renders test error button', () => {
-      render(
-        <Main
-          pokemon={[]}
-          isLoading={false}
-          error={null}
-          onError={mockOnError}
-        />
-      );
-
-      expect(
-        screen.getByRole('button', { name: /test error/i })
-      ).toBeInTheDocument();
+      expect(screen.getByText('CardList with 2 pokemon')).toBeInTheDocument();
     });
 
     it('passes loading state to CardList', () => {
@@ -71,7 +63,7 @@ describe('Main Component', () => {
           pokemon={[]}
           isLoading={true}
           error={null}
-          onError={mockOnError}
+          onCardClick={mockOnCardClick}
         />
       );
 
@@ -79,104 +71,67 @@ describe('Main Component', () => {
     });
 
     it('passes error state to CardList', () => {
-      const errorMessage = 'Test error message';
-
       render(
         <Main
           pokemon={[]}
           isLoading={false}
-          error={errorMessage}
-          onError={mockOnError}
+          error="Test error message"
+          onCardClick={mockOnCardClick}
         />
       );
 
       expect(
-        screen.getByText(`CardList Error: ${errorMessage}`)
+        screen.getByText('CardList Error: Test error message')
       ).toBeInTheDocument();
     });
   });
 
-  describe('Error Button Tests', () => {
-    it('calls onError when test error button is clicked', () => {
+  describe('Card Click Handling', () => {
+    it('passes onCardClick to CardList', () => {
       render(
         <Main
           pokemon={[]}
           isLoading={false}
           error={null}
-          onError={mockOnError}
+          onCardClick={mockOnCardClick}
         />
       );
 
-      const errorButton = screen.getByRole('button', { name: /test error/i });
-      fireEvent.click(errorButton);
+      const cardClickButton = screen.getByText('Test Card Click');
+      cardClickButton.click();
 
-      expect(mockOnError).toHaveBeenCalledTimes(1);
-      expect(mockOnError).toHaveBeenCalledWith(expect.any(Error));
-
-      const calledError = mockOnError.mock.calls[0][0] as Error;
-      expect(calledError.message).toBe('Test error for ErrorBoundary!');
+      expect(mockOnCardClick).toHaveBeenCalledWith({
+        name: 'test',
+        url: 'test',
+      });
     });
 
-    it('creates new Error instance on each click', () => {
-      render(
-        <Main
-          pokemon={[]}
-          isLoading={false}
-          error={null}
-          onError={mockOnError}
-        />
-      );
+    it('works without onCardClick prop', () => {
+      render(<Main pokemon={[]} isLoading={false} error={null} />);
 
-      const errorButton = screen.getByRole('button', { name: /test error/i });
-
-      fireEvent.click(errorButton);
-      fireEvent.click(errorButton);
-
-      expect(mockOnError).toHaveBeenCalledTimes(2);
-
-      const firstError = mockOnError.mock.calls[0][0] as Error;
-      const secondError = mockOnError.mock.calls[1][0] as Error;
-
-      expect(firstError).not.toBe(secondError); // Different instances
-      expect(firstError.message).toBe(secondError.message); // Same message
-    });
-
-    it('triggers error even when component has existing error', () => {
-      render(
-        <Main
-          pokemon={[]}
-          isLoading={false}
-          error="Existing error"
-          onError={mockOnError}
-        />
-      );
-
-      const errorButton = screen.getByRole('button', { name: /test error/i });
-      fireEvent.click(errorButton);
-
-      expect(mockOnError).toHaveBeenCalledWith(expect.any(Error));
+      expect(screen.getByTestId('cardlist-mock')).toBeInTheDocument();
+      expect(screen.queryByText('Test Card Click')).not.toBeInTheDocument();
     });
   });
 
   describe('Props Integration Tests', () => {
     it('passes all pokemon data correctly to CardList', () => {
-      const pokemon = [
-        { name: 'pikachu', url: 'https://example.com/25' },
-        { name: 'charizard', url: 'https://example.com/6' },
+      const mockPokemon: Pokemon[] = [
+        { name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/' },
+        { name: 'ivysaur', url: 'https://pokeapi.co/api/v2/pokemon/2/' },
+        { name: 'venusaur', url: 'https://pokeapi.co/api/v2/pokemon/3/' },
       ];
 
       render(
         <Main
-          pokemon={pokemon}
+          pokemon={mockPokemon}
           isLoading={false}
           error={null}
-          onError={mockOnError}
+          onCardClick={mockOnCardClick}
         />
       );
 
-      expect(
-        screen.getByText(`CardList with ${pokemon.length} pokemon`)
-      ).toBeInTheDocument();
+      expect(screen.getByText('CardList with 3 pokemon')).toBeInTheDocument();
     });
 
     it('handles empty pokemon array', () => {
@@ -185,7 +140,7 @@ describe('Main Component', () => {
           pokemon={[]}
           isLoading={false}
           error={null}
-          onError={mockOnError}
+          onCardClick={mockOnCardClick}
         />
       );
 
@@ -198,40 +153,24 @@ describe('Main Component', () => {
           pokemon={[]}
           isLoading={true}
           error={null}
-          onError={mockOnError}
+          onCardClick={mockOnCardClick}
         />
       );
 
       expect(screen.getByText('CardList Loading')).toBeInTheDocument();
 
-      // Change to error state
       rerender(
         <Main
           pokemon={[]}
           isLoading={false}
-          error="API Error"
-          onError={mockOnError}
-        />
-      );
-
-      expect(screen.getByText('CardList Error: API Error')).toBeInTheDocument();
-      expect(screen.queryByText('CardList Loading')).not.toBeInTheDocument();
-
-      // Change to success state
-      const pokemon = mockPokemonResponse.results;
-      rerender(
-        <Main
-          pokemon={pokemon}
-          isLoading={false}
-          error={null}
-          onError={mockOnError}
+          error="Network error"
+          onCardClick={mockOnCardClick}
         />
       );
 
       expect(
-        screen.getByText(`CardList with ${pokemon.length} pokemon`)
+        screen.getByText('CardList Error: Network error')
       ).toBeInTheDocument();
-      expect(screen.queryByText(/CardList Error/)).not.toBeInTheDocument();
     });
   });
 });

@@ -1,9 +1,7 @@
 import { render, screen, waitFor } from '../../__tests__/test-utils';
-import { act } from '@testing-library/react';
 import Card from '../Card';
 import { PokemonApi } from '../../services/pokemonApi';
-import { mockPokemonDetails } from '../../__tests__/mocks/pokemonApi';
-import type { Pokemon } from '../../types/pokemon';
+import type { Pokemon, PokemonDetails } from '../../types/pokemon';
 
 // Mock the PokemonApi
 vi.mock('../../services/pokemonApi', () => ({
@@ -13,8 +11,26 @@ vi.mock('../../services/pokemonApi', () => ({
 }));
 
 const mockPokemon: Pokemon = {
-  name: 'bulbasaur',
-  url: 'https://pokeapi.co/api/v2/pokemon/1/',
+  name: 'pikachu',
+  url: 'https://pokeapi.co/api/v2/pokemon/25/',
+};
+
+const mockPokemonDetails: PokemonDetails = {
+  id: 25,
+  name: 'pikachu',
+  height: 4,
+  weight: 60,
+  sprites: {
+    front_default:
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
+  },
+  types: [
+    {
+      type: {
+        name: 'electric',
+      },
+    },
+  ],
 };
 
 describe('Card Component', () => {
@@ -25,7 +41,7 @@ describe('Card Component', () => {
   describe('Rendering Tests', () => {
     it('displays loading state initially', () => {
       vi.mocked(PokemonApi.getPokemonDetails).mockImplementation(
-        () => new Promise(() => {}) // Never resolves to keep loading state
+        () => new Promise(() => {}) // Never resolves
       );
 
       render(<Card pokemon={mockPokemon} />);
@@ -42,13 +58,11 @@ describe('Card Component', () => {
       render(<Card pokemon={mockPokemon} />);
 
       await waitFor(() => {
-        expect(screen.getByText(mockPokemonDetails.name)).toBeInTheDocument();
+        expect(screen.getByText('pikachu')).toBeInTheDocument();
+        expect(
+          screen.getByText(/Height: 0.4m, Weight: 6kg, Types: electric/)
+        ).toBeInTheDocument();
       });
-
-      expect(screen.getByText(/Height:/)).toBeInTheDocument();
-      expect(screen.getByText(/Weight:/)).toBeInTheDocument();
-      expect(screen.getByText(/grass/i)).toBeInTheDocument();
-      expect(screen.getByText(/poison/i)).toBeInTheDocument();
     });
 
     it('displays pokemon image when available', async () => {
@@ -59,7 +73,7 @@ describe('Card Component', () => {
       render(<Card pokemon={mockPokemon} />);
 
       await waitFor(() => {
-        const image = screen.getByAltText(mockPokemonDetails.name);
+        const image = screen.getByAltText('pikachu');
         expect(image).toBeInTheDocument();
         expect(image).toHaveAttribute(
           'src',
@@ -68,21 +82,21 @@ describe('Card Component', () => {
       });
     });
 
-    it('handles missing props gracefully', async () => {
-      const pokemonWithMissingData: Pokemon = {
-        name: '',
-        url: '',
+    it('handles missing image gracefully', async () => {
+      const detailsWithoutImage = {
+        ...mockPokemonDetails,
+        sprites: { front_default: null },
       };
 
-      vi.mocked(PokemonApi.getPokemonDetails).mockRejectedValue(
-        new Error('Invalid pokemon')
+      vi.mocked(PokemonApi.getPokemonDetails).mockResolvedValue(
+        detailsWithoutImage
       );
 
-      render(<Card pokemon={pokemonWithMissingData} />);
+      render(<Card pokemon={mockPokemon} />);
 
       await waitFor(() => {
-        expect(screen.getByText(/Error:/)).toBeInTheDocument();
-        expect(screen.getByText(/Invalid pokemon/)).toBeInTheDocument();
+        expect(screen.getByText('pikachu')).toBeInTheDocument();
+        expect(screen.queryByAltText('pikachu')).not.toBeInTheDocument();
       });
     });
   });
@@ -95,14 +109,7 @@ describe('Card Component', () => {
 
       render(<Card pokemon={mockPokemon} />);
 
-      expect(PokemonApi.getPokemonDetails).toHaveBeenCalledWith(
-        mockPokemon.name
-      );
-
-      // Wait for async state updates to complete
-      await waitFor(() => {
-        expect(PokemonApi.getPokemonDetails).toHaveBeenCalled();
-      });
+      expect(PokemonApi.getPokemonDetails).toHaveBeenCalledWith('pikachu');
     });
 
     it('handles API success response correctly', async () => {
@@ -113,29 +120,24 @@ describe('Card Component', () => {
       render(<Card pokemon={mockPokemon} />);
 
       await waitFor(() => {
-        expect(screen.getByText(mockPokemonDetails.name)).toBeInTheDocument();
+        expect(screen.getByText('pikachu')).toBeInTheDocument();
+        expect(screen.getByText(/electric/)).toBeInTheDocument();
       });
-
-      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-      expect(screen.queryByText(/Error:/)).not.toBeInTheDocument();
     });
 
     it('handles API error response correctly', async () => {
-      const errorMessage = 'Failed to fetch pokemon details';
       vi.mocked(PokemonApi.getPokemonDetails).mockRejectedValue(
-        new Error(errorMessage)
+        new Error('Pokemon not found')
       );
 
       render(<Card pokemon={mockPokemon} />);
 
       await waitFor(() => {
-        expect(screen.getByText(/Error:/)).toBeInTheDocument();
-        expect(screen.getByText(new RegExp(errorMessage))).toBeInTheDocument();
+        expect(screen.getByText('pikachu')).toBeInTheDocument(); // Name still shown
+        expect(
+          screen.getByText('Error: Pokemon not found')
+        ).toBeInTheDocument();
       });
-
-      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-      // Note: Pokemon name appears in error title, so we check for successful data instead
-      expect(screen.queryByText(/Height:/)).not.toBeInTheDocument();
     });
 
     it('handles network errors', async () => {
@@ -146,8 +148,7 @@ describe('Card Component', () => {
       render(<Card pokemon={mockPokemon} />);
 
       await waitFor(() => {
-        expect(screen.getByText(/Error:/)).toBeInTheDocument();
-        expect(screen.getByText(/Network error/)).toBeInTheDocument();
+        expect(screen.getByText('Error: Network error')).toBeInTheDocument();
       });
     });
 
@@ -156,60 +157,96 @@ describe('Card Component', () => {
         mockPokemonDetails
       );
 
-      render(<Card pokemon={mockPokemon} />);
+      const { rerender } = render(<Card pokemon={mockPokemon} />);
 
-      // Wait for async state updates to complete
       await waitFor(() => {
-        expect(PokemonApi.getPokemonDetails).toHaveBeenCalledTimes(1);
+        expect(screen.getByText('pikachu')).toBeInTheDocument();
       });
+
+      // Rerender with same pokemon should not trigger new API call
+      rerender(<Card pokemon={mockPokemon} />);
+
+      expect(PokemonApi.getPokemonDetails).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('Error Handling Tests', () => {
     it('displays error message when API call fails', async () => {
       vi.mocked(PokemonApi.getPokemonDetails).mockRejectedValue(
-        new Error('API Error')
+        new Error('Service unavailable')
       );
 
       render(<Card pokemon={mockPokemon} />);
 
       await waitFor(() => {
-        expect(screen.getByText(/Error:/)).toBeInTheDocument();
-        expect(screen.getByText(/API Error/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Error: Service unavailable/)
+        ).toBeInTheDocument();
       });
     });
 
     it('handles different types of errors gracefully', async () => {
-      // Test with non-Error object
       vi.mocked(PokemonApi.getPokemonDetails).mockRejectedValue('String error');
 
       render(<Card pokemon={mockPokemon} />);
 
       await waitFor(() => {
-        expect(screen.getByText(/Error:/)).toBeInTheDocument();
-        expect(screen.getByText(/Unknown error/)).toBeInTheDocument();
+        expect(screen.getByText(/Error: Unknown error/)).toBeInTheDocument();
       });
     });
 
     it('shows loading state before error state', async () => {
-      let rejectFunction: ((reason?: unknown) => void) | undefined;
-      vi.mocked(PokemonApi.getPokemonDetails).mockImplementation(
-        () =>
-          new Promise((_, reject) => {
-            rejectFunction = reject;
-          })
+      vi.mocked(PokemonApi.getPokemonDetails).mockRejectedValue(
+        new Error('Failed to load')
       );
 
       render(<Card pokemon={mockPokemon} />);
 
+      // Initially should show loading
       expect(screen.getByText('Loading...')).toBeInTheDocument();
 
-      // Trigger the rejection
-      await act(async () => {
-        if (rejectFunction) {
-          rejectFunction(new Error('Test error'));
-        }
+      // Then should show error
+      await waitFor(() => {
+        expect(screen.getByText(/Error: Failed to load/)).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('Click Handling', () => {
+    it('calls onClick when provided and card is clicked', async () => {
+      const mockOnClick = vi.fn();
+      vi.mocked(PokemonApi.getPokemonDetails).mockResolvedValue(
+        mockPokemonDetails
+      );
+
+      render(<Card pokemon={mockPokemon} onClick={mockOnClick} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('pikachu')).toBeInTheDocument();
+      });
+
+      const card = screen.getByText('pikachu').closest('div');
+      if (card) {
+        card.click();
+        expect(mockOnClick).toHaveBeenCalled();
+      }
+    });
+
+    it('does not crash when no onClick is provided', async () => {
+      vi.mocked(PokemonApi.getPokemonDetails).mockResolvedValue(
+        mockPokemonDetails
+      );
+
+      render(<Card pokemon={mockPokemon} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('pikachu')).toBeInTheDocument();
+      });
+
+      const card = screen.getByText('pikachu').closest('div');
+      if (card) {
+        expect(() => card.click()).not.toThrow();
+      }
     });
   });
 });

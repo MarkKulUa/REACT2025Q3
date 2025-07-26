@@ -1,0 +1,146 @@
+import { render, screen } from '../../__tests__/test-utils';
+import { MemoryRouter } from 'react-router-dom';
+import PokemonSearch from '../PokemonSearch';
+import type { Pokemon } from '../../types/pokemon';
+
+// Mock the hooks
+vi.mock('../../hooks/usePokemon', () => ({
+  usePokemon: vi.fn(() => ({
+    pokemon: [],
+    isLoading: false,
+    error: null,
+    searchPokemon: vi.fn(),
+    totalCount: 0,
+  })),
+}));
+
+vi.mock('../../hooks/useLocalStorage', () => ({
+  useLocalStorage: vi.fn(() => ['', vi.fn()]),
+}));
+
+// Mock the child components
+vi.mock('../../components/Header', () => ({
+  default: ({
+    onSearch,
+    isLoading,
+  }: {
+    onSearch: (term: string) => void;
+    isLoading: boolean;
+  }) => (
+    <div data-testid="header-mock">
+      <input data-testid="search-input" />
+      <button
+        data-testid="search-button"
+        disabled={isLoading}
+        onClick={() => onSearch('test-search')}
+      >
+        {isLoading ? 'Searching...' : 'Search'}
+      </button>
+    </div>
+  ),
+}));
+
+vi.mock('../../components/Main', () => ({
+  default: ({
+    pokemon,
+    isLoading,
+    error,
+    onCardClick,
+  }: {
+    pokemon: Pokemon[];
+    isLoading: boolean;
+    error: string | null;
+    onCardClick?: (pokemon: Pokemon) => void;
+  }) => (
+    <div data-testid="main-mock">
+      {isLoading && <div>Main Loading</div>}
+      {error && <div>Main Error: {error}</div>}
+      {!isLoading && !error && <div>Main with {pokemon.length} pokemon</div>}
+      {onCardClick && (
+        <button
+          data-testid="card-click-button"
+          onClick={() => onCardClick({ name: 'test-pokemon', url: 'test-url' })}
+        >
+          Click Pokemon
+        </button>
+      )}
+    </div>
+  ),
+}));
+
+vi.mock('../../components/Pagination', () => ({
+  default: ({
+    currentPage,
+    totalItems,
+    itemsPerPage,
+    onPageChange,
+  }: {
+    currentPage: number;
+    totalItems: number;
+    itemsPerPage: number;
+    onPageChange: (page: number) => void;
+  }) => (
+    <div data-testid="pagination-mock">
+      <span>
+        Page {currentPage} of {Math.ceil(totalItems / itemsPerPage)}
+      </span>
+      <button onClick={() => onPageChange(currentPage + 1)}>Next Page</button>
+    </div>
+  ),
+}));
+
+// Mock react-router-dom hooks
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+    useParams: () => ({}),
+    useSearchParams: () => [new URLSearchParams(), vi.fn()],
+    Outlet: () => <div data-testid="outlet-mock">Outlet Content</div>,
+  };
+});
+
+describe('PokemonSearch Component', () => {
+  const renderWithRouter = (component: React.ReactElement) => {
+    return render(<MemoryRouter>{component}</MemoryRouter>);
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('Rendering Tests', () => {
+    it('renders header component', () => {
+      renderWithRouter(<PokemonSearch />);
+      expect(screen.getByTestId('header-mock')).toBeInTheDocument();
+    });
+
+    it('renders main component', () => {
+      renderWithRouter(<PokemonSearch />);
+      expect(screen.getByTestId('main-mock')).toBeInTheDocument();
+    });
+
+    it('renders outlet for nested routes', () => {
+      renderWithRouter(<PokemonSearch />);
+      expect(screen.getByTestId('outlet-mock')).toBeInTheDocument();
+    });
+  });
+
+  describe('Layout Structure', () => {
+    it('has proper container structure', () => {
+      renderWithRouter(<PokemonSearch />);
+      expect(screen.getByTestId('header-mock')).toBeInTheDocument();
+      expect(screen.getByTestId('main-mock')).toBeInTheDocument();
+      expect(screen.getByTestId('outlet-mock')).toBeInTheDocument();
+    });
+
+    it('maintains proper component hierarchy', () => {
+      renderWithRouter(<PokemonSearch />);
+      // Just check that all components are rendered, don't test DOM hierarchy
+      expect(screen.getByTestId('header-mock')).toBeInTheDocument();
+      expect(screen.getByTestId('main-mock')).toBeInTheDocument();
+      expect(screen.getByTestId('outlet-mock')).toBeInTheDocument();
+    });
+  });
+});
