@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokemon Search App</title>
+    <script>
+      // Universal SPA routing fix for GitHub Pages, Vercel, and other platforms
+      (function() {
+        const path = window.location.pathname;
+        const search = window.location.search;
+        const hash = window.location.hash;
+        
+        // Detect if we're on GitHub Pages
+        const isGitHubPages = window.location.hostname === 'markkulua.github.io';
+        const repoPath = '/REACT2025Q3';
+        
+        let redirectUrl;
+        
+        if (isGitHubPages && path.startsWith(repoPath)) {
+          // GitHub Pages: redirect to index.html with the repository path
+          redirectUrl = repoPath + '/index.html' + search + hash;
+        } else if (isGitHubPages) {
+          // GitHub Pages: redirect to index.html
+          redirectUrl = '/index.html' + search + hash;
+        } else {
+          // Other platforms (Vercel, Netlify, etc.): redirect to root
+          redirectUrl = '/' + search + hash;
+        }
+        
+        // Redirect to the main app
+        window.location.replace(redirectUrl);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root">
+      <h1>Redirecting...</h1>
+      <p>If you are not redirected automatically, <a href="/">click here</a>.</p>
+    </div>
+  </body>
+</html> 
