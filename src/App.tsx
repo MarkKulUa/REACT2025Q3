@@ -8,43 +8,63 @@ import About from './pages/About';
 import NotFound from './pages/NotFound';
 import './App.css';
 
-const router = createBrowserRouter([
+// Function to determine base path
+const getBasename = (): string => {
+  // For local development
+  if (import.meta.env.DEV) {
+    return '';
+  }
+
+  // For GitHub Pages
+  if (window.location.hostname === 'markkulua.github.io') {
+    return '/REACT2025Q3';
+  }
+
+  return '';
+};
+
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <Layout />,
+      errorElement: <NotFound />,
+      children: [
+        {
+          path: '',
+          element: <PokemonSearch />,
+          children: [
+            {
+              path: 'pokemon/:pokemonName',
+              element: <PokemonDetails />,
+            },
+          ],
+        },
+        {
+          path: ':page',
+          element: <PokemonSearch />,
+          children: [
+            {
+              path: 'pokemon/:pokemonName',
+              element: <PokemonDetails />,
+            },
+          ],
+        },
+        {
+          path: 'about',
+          element: <About />,
+        },
+        {
+          path: '*',
+          element: <NotFound />,
+        },
+      ],
+    },
+  ],
   {
-    path: '/',
-    element: <Layout />,
-    errorElement: <NotFound />,
-    children: [
-      {
-        path: '',
-        element: <PokemonSearch />,
-        children: [
-          {
-            path: 'pokemon/:pokemonName',
-            element: <PokemonDetails />,
-          },
-        ],
-      },
-      {
-        path: ':page',
-        element: <PokemonSearch />,
-        children: [
-          {
-            path: 'pokemon/:pokemonName',
-            element: <PokemonDetails />,
-          },
-        ],
-      },
-      {
-        path: 'about',
-        element: <About />,
-      },
-      {
-        path: '*',
-        element: <NotFound />,
-      },
-    ],
-  },
-]);
+    basename: getBasename(),
+  }
+);
 
 const App: React.FC = () => {
   return (
