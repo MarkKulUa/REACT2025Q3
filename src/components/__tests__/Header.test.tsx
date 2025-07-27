@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '../../__tests__/test-utils';
+import { render, screen, fireEvent } from '../../__tests__/test-utils';
 import Header from '../Header';
 
 // Mock localStorage
@@ -115,17 +115,6 @@ describe('Header Component', () => {
       expect(localStorageMock.getItem).toHaveBeenCalledWith(
         'pokemon-search-term'
       );
-    });
-
-    it('triggers initial search with saved term on mount', async () => {
-      const savedTerm = 'mew';
-      localStorageMock.getItem.mockReturnValue(savedTerm);
-
-      render(<Header onSearch={mockOnSearch} isLoading={false} />);
-
-      await waitFor(() => {
-        expect(mockOnSearch).toHaveBeenCalledWith(savedTerm);
-      });
     });
 
     it('overwrites existing localStorage value when new search is performed', () => {

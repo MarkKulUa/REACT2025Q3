@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import {
   Outlet,
   useNavigate,
@@ -24,6 +24,7 @@ const PokemonSearch: React.FC = () => {
     'pokemon-search-term',
     ''
   );
+  const hasInitialized = useRef(false);
 
   // Get current page from URL params or search params, default to 1
   const pageFromParams = params.page ? parseInt(params.page, 10) : null;
@@ -65,18 +66,15 @@ const PokemonSearch: React.FC = () => {
     [navigate, currentPage]
   );
 
-  // Load data when page changes
+  // Load data when search term or page changes
   useEffect(() => {
     if (searchTerm) {
       searchPokemon(searchTerm, currentPage);
+    } else {
+      // Load all Pokemon when there's no search term
+      searchPokemon('', currentPage);
     }
-  }, [currentPage, searchTerm, searchPokemon]);
-
-  // Load initial data
-  useEffect(() => {
-    if (searchTerm) {
-      searchPokemon(searchTerm, currentPage);
-    }
+    hasInitialized.current = true;
   }, [searchTerm, currentPage, searchPokemon]);
 
   return (

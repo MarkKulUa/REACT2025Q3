@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import styles from './Header.module.css';
 
@@ -10,11 +10,6 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onSearch, isLoading }) => {
   const STORAGE_KEY = 'pokemon-search-term';
   const [searchTerm, setSearchTerm] = useLocalStorage(STORAGE_KEY, '');
-
-  useEffect(() => {
-    // Trigger initial search with saved term
-    onSearch(searchTerm);
-  }, [onSearch, searchTerm]);
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
