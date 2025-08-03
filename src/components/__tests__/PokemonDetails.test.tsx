@@ -23,7 +23,9 @@ vi.mock('react-router-dom', async () => {
 
 describe('PokemonDetails Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
-    return render(<MemoryRouter>{component}</MemoryRouter>);
+    return render(<MemoryRouter>{component}</MemoryRouter>, {
+      needsRouter: false,
+    });
   };
 
   beforeEach(() => {

@@ -4,7 +4,9 @@ import About from '../About';
 
 describe('About Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
-    return render(<MemoryRouter>{component}</MemoryRouter>);
+    return render(<MemoryRouter>{component}</MemoryRouter>, {
+      needsRouter: false,
+    });
   };
 
   describe('Rendering Tests', () => {

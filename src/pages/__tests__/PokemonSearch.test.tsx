@@ -103,7 +103,9 @@ vi.mock('react-router-dom', async () => {
 
 describe('PokemonSearch Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
-    return render(<MemoryRouter>{component}</MemoryRouter>);
+    return render(<MemoryRouter>{component}</MemoryRouter>, {
+      needsRouter: false,
+    });
   };
 
   beforeEach(() => {
@@ -137,7 +139,6 @@ describe('PokemonSearch Component', () => {
 
     it('maintains proper component hierarchy', () => {
       renderWithRouter(<PokemonSearch />);
-      // Just check that all components are rendered, don't test DOM hierarchy
       expect(screen.getByTestId('header-mock')).toBeInTheDocument();
       expect(screen.getByTestId('main-mock')).toBeInTheDocument();
       expect(screen.getByTestId('outlet-mock')).toBeInTheDocument();

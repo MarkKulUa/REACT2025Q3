@@ -17,7 +17,8 @@ describe('Layout Component', () => {
     return render(
       <MemoryRouter initialEntries={[initialPath]}>
         <Layout />
-      </MemoryRouter>
+      </MemoryRouter>,
+      { needsRouter: false }
     );
   };
 
@@ -122,17 +123,15 @@ describe('Layout Component', () => {
   });
 
   describe('Responsive Behavior', () => {
-    it('maintains structure across different routes', () => {
-      const { rerender } = renderWithRouter('/');
+    it('maintains navigation structure on home route', () => {
+      renderWithRouter('/');
 
       expect(screen.getByRole('navigation')).toBeInTheDocument();
       expect(screen.getByRole('main')).toBeInTheDocument();
+    });
 
-      rerender(
-        <MemoryRouter initialEntries={['/about']}>
-          <Layout />
-        </MemoryRouter>
-      );
+    it('maintains navigation structure on about route', () => {
+      renderWithRouter('/about');
 
       expect(screen.getByRole('navigation')).toBeInTheDocument();
       expect(screen.getByRole('main')).toBeInTheDocument();
