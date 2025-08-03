@@ -2,7 +2,6 @@ import { render, screen } from '../../__tests__/test-utils';
 import { MemoryRouter } from 'react-router-dom';
 import Layout from '../Layout';
 
-// Mock react-router-dom Outlet
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {

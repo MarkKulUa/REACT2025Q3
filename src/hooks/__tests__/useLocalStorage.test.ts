@@ -1,7 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { useLocalStorage } from '../useLocalStorage';
 
-// Mock localStorage
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -56,7 +55,7 @@ describe('useLocalStorage Hook', () => {
         .spyOn(console, 'error')
         .mockImplementation(() => {});
 
-      const { result } = renderHook(() => useLocalStorage('test-key', {})); // Use object for JSON parsing
+      const { result } = renderHook(() => useLocalStorage('test-key', {}));
 
       expect(result.current[0]).toEqual({});
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -83,7 +82,7 @@ describe('useLocalStorage Hook', () => {
       expect(result.current[0]).toBe('new-value');
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'test-key',
-        'new-value' // Raw string, not JSON
+        'new-value'
       );
     });
 
@@ -122,7 +121,6 @@ describe('useLocalStorage Hook', () => {
         result.current[1]('new-value');
       });
 
-      // State should still update even if localStorage fails
       expect(result.current[0]).toBe('new-value');
       expect(consoleSpy).toHaveBeenCalledWith(
         'Error setting localStorage key "test-key":',

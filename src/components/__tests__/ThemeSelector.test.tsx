@@ -57,11 +57,9 @@ describe('ThemeSelector Component', () => {
     const darkRadio = screen.getByLabelText(/dark/i);
     const lightRadio = screen.getByLabelText(/light/i);
 
-    // Switch to dark first
     fireEvent.click(darkRadio);
     expect(darkRadio).toBeChecked();
 
-    // Switch back to light
     fireEvent.click(lightRadio);
     expect(lightRadio).toBeChecked();
     expect(darkRadio).not.toBeChecked();

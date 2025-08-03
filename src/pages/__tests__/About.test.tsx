@@ -130,5 +130,13 @@ describe('About Component', () => {
       });
       expect(homeLink).toBeInTheDocument();
     });
+
+    it('displays theme selector', () => {
+      renderWithRouter(<About />);
+
+      expect(screen.getByText('Theme:')).toBeInTheDocument();
+      expect(screen.getByLabelText('Light')).toBeInTheDocument();
+      expect(screen.getByLabelText('Dark')).toBeInTheDocument();
+    });
   });
 });

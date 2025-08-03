@@ -81,7 +81,6 @@ export const renderWithRedux = (
   };
 };
 
-// For components that only need Theme
 export const renderWithTheme = (ui: ReactElement, renderOptions = {}) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <ThemeProvider>{children}</ThemeProvider>

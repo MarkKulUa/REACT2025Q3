@@ -3,7 +3,6 @@ import Card from '../Card';
 import { PokemonApi } from '../../services/pokemonApi';
 import type { Pokemon, PokemonDetails } from '../../types/pokemon';
 
-// Mock the PokemonApi
 vi.mock('../../services/pokemonApi', () => ({
   PokemonApi: {
     getPokemonDetails: vi.fn(),
@@ -41,7 +40,7 @@ describe('Card Component', () => {
   describe('Rendering Tests', () => {
     it('displays loading state initially', () => {
       vi.mocked(PokemonApi.getPokemonDetails).mockImplementation(
-        () => new Promise(() => {}) // Never resolves
+        () => new Promise(() => {})
       );
 
       render(<Card pokemon={mockPokemon} />);
@@ -133,7 +132,7 @@ describe('Card Component', () => {
       render(<Card pokemon={mockPokemon} />);
 
       await waitFor(() => {
-        expect(screen.getByText('pikachu')).toBeInTheDocument(); // Name still shown
+        expect(screen.getByText('pikachu')).toBeInTheDocument();
         expect(
           screen.getByText('Error: Pokemon not found')
         ).toBeInTheDocument();
@@ -163,7 +162,6 @@ describe('Card Component', () => {
         expect(screen.getByText('pikachu')).toBeInTheDocument();
       });
 
-      // Rerender with same pokemon should not trigger new API call
       rerender(<Card pokemon={mockPokemon} />);
 
       expect(PokemonApi.getPokemonDetails).toHaveBeenCalledTimes(1);
@@ -202,10 +200,8 @@ describe('Card Component', () => {
 
       render(<Card pokemon={mockPokemon} />);
 
-      // Initially should show loading
       expect(screen.getByText('Loading...')).toBeInTheDocument();
 
-      // Then should show error
       await waitFor(() => {
         expect(screen.getByText(/Error: Failed to load/)).toBeInTheDocument();
       });

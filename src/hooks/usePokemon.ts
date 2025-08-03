@@ -29,7 +29,6 @@ export function usePokemon(): UsePokemonResult {
           ITEMS_PER_PAGE * 10
         );
 
-        // Calculate pagination
         const startIndex = (page - 1) * ITEMS_PER_PAGE;
         const endIndex = startIndex + ITEMS_PER_PAGE;
         const paginatedResults = response.results.slice(startIndex, endIndex);

@@ -1,11 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import ThemeSelector from '../components/ThemeSelector';
 import styles from './About.module.css';
 
 const About: React.FC = () => {
   return (
     <div className={styles.aboutContainer}>
-      <h1 className={styles.title}>About This Pokemon App</h1>
+      <div className={styles.headerSection}>
+        <h1 className={styles.title}>About This Pokemon App</h1>
+        <div className={styles.themeSelectorContainer}>
+          <ThemeSelector />
+        </div>
+      </div>
 
       <section className={styles.authorSection}>
         <h2>Author Information</h2>

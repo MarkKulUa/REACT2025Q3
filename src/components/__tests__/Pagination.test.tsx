@@ -21,7 +21,7 @@ describe('Pagination Component', () => {
 
       expect(screen.getByText('← Previous')).toBeInTheDocument();
       expect(screen.getByText('Next →')).toBeInTheDocument();
-      expect(screen.getByText('2')).toBeInTheDocument(); // Current page
+      expect(screen.getByText('2')).toBeInTheDocument();
       expect(screen.getByText(/Showing page 2 of 5/)).toBeInTheDocument();
       expect(screen.getByText(/100 total items/)).toBeInTheDocument();
     });
@@ -63,7 +63,6 @@ describe('Pagination Component', () => {
       );
 
       const currentPageButton = screen.getByRole('button', { name: '3' });
-      // CSS modules transforms class names, so we check if the class contains the active identifier
       expect(currentPageButton.className).toMatch(/active/);
     });
   });
@@ -177,7 +176,7 @@ describe('Pagination Component', () => {
       const currentPageButton = screen.getByRole('button', { name: '3' });
       fireEvent.click(currentPageButton);
 
-      expect(mockOnPageChange).toHaveBeenCalledWith(3); // Still calls, but with same page
+      expect(mockOnPageChange).toHaveBeenCalledWith(3);
     });
   });
 
@@ -209,7 +208,7 @@ describe('Pagination Component', () => {
       );
 
       expect(screen.getByRole('button', { name: '1' })).toBeInTheDocument();
-      expect(screen.getAllByText('...')).toHaveLength(2); // There can be multiple ellipsis
+      expect(screen.getAllByText('...')).toHaveLength(2);
       expect(screen.getByRole('button', { name: '10' })).toBeInTheDocument();
     });
 

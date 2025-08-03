@@ -7,7 +7,6 @@ export const downloadSelectedItemsAsCSV = (
     return;
   }
 
-  // CSV headers
   const headers = [
     'Name',
     'Description',
@@ -30,7 +29,6 @@ export const downloadSelectedItemsAsCSV = (
       : 'N/A';
     const id = details ? details.id.toString() : 'N/A';
 
-    // Escape CSV values (handle commas, quotes, newlines)
     const escapeCSV = (value: string): string => {
       if (value.includes(',') || value.includes('"') || value.includes('\n')) {
         return `"${value.replace(/"/g, '""')}"`;

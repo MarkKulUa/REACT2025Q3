@@ -2,7 +2,6 @@ import { render, screen } from '../../__tests__/test-utils';
 import Main from '../Main';
 import type { Pokemon } from '../../types/pokemon';
 
-// Mock CardList component
 vi.mock('../CardList', () => ({
   default: ({
     pokemon,

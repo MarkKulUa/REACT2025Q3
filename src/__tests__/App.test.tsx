@@ -1,7 +1,6 @@
 import { render, screen } from './test-utils';
 import App from '../App';
 
-// Mock the individual page components
 vi.mock('../pages/PokemonSearch', () => ({
   default: () => (
     <div data-testid="pokemon-search-page">Pokemon Search Page</div>
@@ -31,7 +30,6 @@ vi.mock('../components/ErrorBoundary', () => ({
   ),
 }));
 
-// Mock react-router-dom to avoid nesting routers
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
@@ -77,7 +75,6 @@ describe('App Component with Routing', () => {
 
       expect(screen.getByTestId('error-boundary-mock')).toBeInTheDocument();
 
-      // Check that router content is inside ErrorBoundary
       const errorBoundary = screen.getByTestId('error-boundary-mock');
       expect(errorBoundary).toContainElement(
         screen.getByTestId('router-provider-mock')
