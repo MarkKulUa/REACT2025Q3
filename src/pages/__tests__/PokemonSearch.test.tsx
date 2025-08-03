@@ -1,9 +1,8 @@
-import { render, screen } from '../../__tests__/test-utils';
+import { render, screen, fireEvent } from '../../__tests__/test-utils';
 import { MemoryRouter } from 'react-router-dom';
 import PokemonSearch from '../PokemonSearch';
 import type { Pokemon } from '../../types/pokemon';
 
-// Mock the hooks
 vi.mock('../../hooks/usePokemon', () => ({
   usePokemon: vi.fn(() => ({
     pokemon: [],
@@ -18,7 +17,6 @@ vi.mock('../../hooks/useLocalStorage', () => ({
   useLocalStorage: vi.fn(() => ['', vi.fn()]),
 }));
 
-// Mock the child components
 vi.mock('../../components/Header', () => ({
   default: ({
     onSearch,
@@ -90,11 +88,12 @@ vi.mock('../../components/Pagination', () => ({
 }));
 
 // Mock react-router-dom hooks
+const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useNavigate: () => vi.fn(),
+    useNavigate: () => mockNavigate,
     useParams: () => ({}),
     useSearchParams: () => [new URLSearchParams(), vi.fn()],
     Outlet: () => <div data-testid="outlet-mock">Outlet Content</div>,
@@ -142,6 +141,21 @@ describe('PokemonSearch Component', () => {
       expect(screen.getByTestId('header-mock')).toBeInTheDocument();
       expect(screen.getByTestId('main-mock')).toBeInTheDocument();
       expect(screen.getByTestId('outlet-mock')).toBeInTheDocument();
+    });
+  });
+
+  describe('Click Outside Functionality', () => {
+    it('closes PokemonDetails when clicking outside', () => {
+      renderWithRouter(<PokemonSearch />);
+
+      const detailsSection = screen.getByTestId('outlet-mock').parentElement;
+      expect(detailsSection).toBeInTheDocument();
+
+      if (detailsSection) {
+        fireEvent.click(detailsSection);
+      }
+
+      expect(mockNavigate).toHaveBeenCalledWith('', { replace: true });
     });
   });
 });

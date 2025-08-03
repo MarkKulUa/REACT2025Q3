@@ -30,26 +30,22 @@ const PokemonSearch: React.FC = () => {
   const selectedItems = useAppSelector((state) => state.selectedItems.items);
   const hasInitialized = useRef(false);
 
-  // Get current page from URL params or search params, default to 1
   const pageFromParams = params.page ? parseInt(params.page, 10) : null;
   const pageFromSearch = searchParams.get('page')
     ? parseInt(searchParams.get('page') || '1', 10)
     : null;
   const currentPage = pageFromParams || pageFromSearch || 1;
 
-  // Handle search functionality
   const handleSearch = useCallback(
     async (term: string) => {
       setSearchTerm(term);
-      await searchPokemon(term, 1); // Reset to page 1 on new search
+      await searchPokemon(term, 1);
 
-      // Navigate to home page with new search
       navigate('/', { replace: true });
     },
     [searchPokemon, setSearchTerm, navigate]
   );
 
-  // Handle page changes
   const handlePageChange = useCallback(
     (page: number) => {
       if (page === 1) {
@@ -61,7 +57,6 @@ const PokemonSearch: React.FC = () => {
     [navigate]
   );
 
-  // Handle card click to show details
   const handleCardClick = useCallback(
     (pokemon: Pokemon) => {
       const basePath = currentPage === 1 ? '' : `/${currentPage}`;
@@ -70,17 +65,24 @@ const PokemonSearch: React.FC = () => {
     [navigate, currentPage]
   );
 
-  // Handle download of selected items
   const handleDownload = useCallback(() => {
     downloadSelectedItemsAsCSV(selectedItems);
   }, [selectedItems]);
 
-  // Load data when search term or page changes
+  const handleDetailsSectionClick = useCallback(
+    (event: React.MouseEvent) => {
+      if (event.target === event.currentTarget) {
+        const basePath = currentPage === 1 ? '' : `/${currentPage}`;
+        navigate(basePath, { replace: true });
+      }
+    },
+    [navigate, currentPage]
+  );
+
   useEffect(() => {
     if (searchTerm) {
       searchPokemon(searchTerm, currentPage);
     } else {
-      // Load all Pokemon when there's no search term
       searchPokemon('', currentPage);
     }
     hasInitialized.current = true;
@@ -106,7 +108,10 @@ const PokemonSearch: React.FC = () => {
         )}
       </div>
 
-      <div className={styles.detailsSection}>
+      <div
+        className={styles.detailsSection}
+        onClick={handleDetailsSectionClick}
+      >
         <Outlet />
       </div>
 
