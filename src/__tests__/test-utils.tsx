@@ -6,26 +6,20 @@ import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import selectedItemsReducer from '../store/slices/selectedItemsSlice';
-import type { SelectedItemsState } from '../store/slices/selectedItemsSlice';
+import type { RootState } from '../store/store';
 import { ThemeProvider } from '../contexts/ThemeContext';
 
-export const createTestStore = (
-  preloadedState?: Partial<{
-    selectedItems: SelectedItemsState;
-  }>
-) => {
+export const createTestStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({
     reducer: {
       selectedItems: selectedItemsReducer,
     },
-    preloadedState,
+    preloadedState: preloadedState as RootState | undefined,
   });
 };
 
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
-  preloadedState?: Partial<{
-    selectedItems: SelectedItemsState;
-  }>;
+  preloadedState?: Partial<RootState>;
   store?: ReturnType<typeof createTestStore>;
   initialEntries?: string[];
   needsProviders?: boolean;
