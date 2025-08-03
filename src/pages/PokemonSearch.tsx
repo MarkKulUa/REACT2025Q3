@@ -7,9 +7,12 @@ import {
 } from 'react-router-dom';
 import { usePokemon } from '../hooks/usePokemon';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useAppSelector } from '../store/hooks';
+import { downloadSelectedItemsAsCSV } from '../utils/downloadUtils';
 import Header from '../components/Header';
 import Main from '../components/Main';
 import Pagination from '../components/Pagination';
+import SelectedItemsFlyout from '../components/SelectedItemsFlyout';
 import type { Pokemon } from '../types/pokemon';
 import styles from './PokemonSearch.module.css';
 
@@ -24,6 +27,7 @@ const PokemonSearch: React.FC = () => {
     'pokemon-search-term',
     ''
   );
+  const selectedItems = useAppSelector((state) => state.selectedItems.items);
   const hasInitialized = useRef(false);
 
   // Get current page from URL params or search params, default to 1
@@ -66,6 +70,11 @@ const PokemonSearch: React.FC = () => {
     [navigate, currentPage]
   );
 
+  // Handle download of selected items
+  const handleDownload = useCallback(() => {
+    downloadSelectedItemsAsCSV(selectedItems);
+  }, [selectedItems]);
+
   // Load data when search term or page changes
   useEffect(() => {
     if (searchTerm) {
@@ -100,6 +109,8 @@ const PokemonSearch: React.FC = () => {
       <div className={styles.detailsSection}>
         <Outlet />
       </div>
+
+      <SelectedItemsFlyout onDownload={handleDownload} />
     </div>
   );
 };
