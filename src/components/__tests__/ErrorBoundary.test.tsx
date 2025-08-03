@@ -1,7 +1,6 @@
 import { render, screen, fireEvent } from '../../__tests__/test-utils';
 import ErrorBoundary from '../ErrorBoundary';
 
-// Component that throws an error when shouldThrow prop is true
 const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
   if (shouldThrow) {
     throw new Error('Test error for ErrorBoundary!');
@@ -9,17 +8,14 @@ const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
   return <div>No error</div>;
 };
 
-// Mock console.error to avoid noise in test output
 const originalConsoleError = console.error;
 
 describe('ErrorBoundary Component', () => {
   beforeEach(() => {
-    // Mock console.error to capture error logging
     console.error = vi.fn();
   });
 
   afterEach(() => {
-    // Restore original console.error
     console.error = originalConsoleError;
     vi.clearAllMocks();
   });
@@ -129,18 +125,12 @@ describe('ErrorBoundary Component', () => {
         </ErrorBoundary>
       );
 
-      // Verify error state
       expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
 
-      // Click try again button - this should call setState
       const tryAgainButton = screen.getByRole('button', { name: /try again/i });
 
-      // Verify button exists and is clickable
       expect(tryAgainButton).toBeInTheDocument();
       fireEvent.click(tryAgainButton);
-
-      // After clicking, verify the button action was executed
-      // Note: Button may be removed from DOM after state reset
     });
   });
 
@@ -152,17 +142,14 @@ describe('ErrorBoundary Component', () => {
         </ErrorBoundary>
       );
 
-      // Verify error state
       expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
       expect(
         screen.getByText(/an error occurred in the application/i)
       ).toBeInTheDocument();
 
-      // Verify try again button works
       const tryAgainButton = screen.getByRole('button', { name: /try again/i });
       expect(tryAgainButton).toBeInTheDocument();
 
-      // Click should not throw
       expect(() => fireEvent.click(tryAgainButton)).not.toThrow();
     });
   });
@@ -199,7 +186,6 @@ describe('ErrorBoundary Component', () => {
       );
 
       expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
-      // Should still show fallback UI even with empty error message
     });
   });
 });

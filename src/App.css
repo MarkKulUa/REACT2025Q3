@@ -1,5 +1,3 @@
-/* Global styles for the Pokemon Search App */
-
 * {
   margin: 0;
   padding: 0;
@@ -13,13 +11,44 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f8f9fa;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+:root {
+  --bg-color: #f8f9fa;
+  --text-color: #333333;
+  --text-secondary: #7f8c8d;
+  --border-color: #e2e8f0;
+  --card-bg: #ffffff;
+  --header-bg: #f8f9fa;
+  --image-bg: #f8f9fa;
+  --info-bg: #f8f9fa;
+  --spinner-bg: #f3f3f3;
+}
+
+[data-theme='dark'] {
+  --bg-color: #111827;
+  --text-color: #f3f4f6;
+  --text-secondary: #d1d5db;
+  --border-color: #374151;
+  --card-bg: #1f2937;
+  --header-bg: #374151;
+  --image-bg: #374151;
+  --info-bg: #374151;
+  --spinner-bg: #4b5563;
+}
+
+[data-theme='dark'] body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 #root {
   min-height: 100vh;
 }
 
-/* Global focus styles for accessibility */
 *:focus {
   outline: 2px solid #007bff;
   outline-offset: 2px;

@@ -1,7 +1,6 @@
 import { render, screen, fireEvent } from '../../__tests__/test-utils';
 import Header from '../Header';
 
-// Mock localStorage
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),

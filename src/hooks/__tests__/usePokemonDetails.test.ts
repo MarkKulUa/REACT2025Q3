@@ -3,7 +3,6 @@ import { usePokemonDetails } from '../usePokemonDetails';
 import { PokemonApi } from '../../services/pokemonApi';
 import type { PokemonDetails } from '../../types/pokemon';
 
-// Mock the PokemonApi
 vi.mock('../../services/pokemonApi', () => ({
   PokemonApi: {
     getPokemonDetails: vi.fn(),
@@ -44,7 +43,7 @@ describe('usePokemonDetails Hook', () => {
 
     it('returns correct initial state when pokemonName is provided', () => {
       vi.mocked(PokemonApi.getPokemonDetails).mockImplementation(
-        () => new Promise(() => {}) // Never resolves to keep loading state
+        () => new Promise(() => {})
       );
 
       const { result } = renderHook(() => usePokemonDetails('pikachu'));
@@ -93,17 +92,14 @@ describe('usePokemonDetails Hook', () => {
 
       const { result } = renderHook(() => usePokemonDetails('pikachu'));
 
-      // Initially loading
       expect(result.current.isLoading).toBe(true);
       expect(result.current.details).toBe(null);
       expect(result.current.error).toBe(null);
 
-      // Complete the fetch
       await act(async () => {
         resolvePromise(mockPokemonDetails);
       });
 
-      // Should no longer be loading
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
@@ -144,7 +140,6 @@ describe('usePokemonDetails Hook', () => {
     });
 
     it('clears previous data on error', async () => {
-      // First successful call
       vi.mocked(PokemonApi.getPokemonDetails).mockResolvedValueOnce(
         mockPokemonDetails
       );
@@ -159,7 +154,6 @@ describe('usePokemonDetails Hook', () => {
         expect(result.current.details).toEqual(mockPokemonDetails);
       });
 
-      // Second call with error
       vi.mocked(PokemonApi.getPokemonDetails).mockRejectedValue(
         new Error('Network error')
       );
@@ -193,7 +187,6 @@ describe('usePokemonDetails Hook', () => {
 
       expect(PokemonApi.getPokemonDetails).toHaveBeenCalledWith('pikachu');
 
-      // Change pokemon name
       rerender({ pokemonName: 'charizard' });
 
       await waitFor(() => {
@@ -218,7 +211,6 @@ describe('usePokemonDetails Hook', () => {
         expect(result.current.details).toEqual(mockPokemonDetails);
       });
 
-      // Change to null
       rerender({ pokemonName: null });
 
       expect(result.current.details).toBe(null);
@@ -255,16 +247,13 @@ describe('usePokemonDetails Hook', () => {
 
       expect(result.current.isLoading).toBe(true);
 
-      // Unmount before API call completes
       unmount();
 
-      // Complete the API call after unmount
       await act(async () => {
         resolvePromise(mockPokemonDetails);
       });
 
-      // Should not cause any errors or warnings
-      expect(true).toBe(true); // Test passes if no errors thrown
+      expect(true).toBe(true);
     });
   });
 
@@ -302,7 +291,6 @@ describe('usePokemonDetails Hook', () => {
         { initialProps: { pokemonName: 'pikachu' as string | null } }
       );
 
-      // Rapidly change pokemon names
       rerender({ pokemonName: 'charizard' });
       rerender({ pokemonName: 'blastoise' });
       rerender({ pokemonName: 'venusaur' });
@@ -311,7 +299,6 @@ describe('usePokemonDetails Hook', () => {
         expect(PokemonApi.getPokemonDetails).toHaveBeenCalledWith('venusaur');
       });
 
-      // Should have been called for each pokemon
       expect(PokemonApi.getPokemonDetails).toHaveBeenCalledTimes(4);
     });
   });
@@ -333,7 +320,6 @@ describe('usePokemonDetails Hook', () => {
 
       const { result } = renderHook(() => usePokemonDetails('pikachu'));
 
-      // Loading state
       expect(
         result.current.details === null ||
           typeof result.current.details === 'object'
@@ -348,7 +334,6 @@ describe('usePokemonDetails Hook', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Success state
       expect(
         result.current.details === null ||
           typeof result.current.details === 'object'

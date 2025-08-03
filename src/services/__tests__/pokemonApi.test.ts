@@ -5,14 +5,12 @@ import {
   mockEmptyResults,
 } from '../../__tests__/mocks/pokemonApi';
 
-// Mock fetch globally
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 describe('PokemonApi', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Reset console.error mock
     console.error = vi.fn();
   });
 
@@ -118,7 +116,6 @@ describe('PokemonApi', () => {
 
         await PokemonApi.searchPokemon('  test  ', 20);
 
-        // Verify it calls with the trimmed term by checking the query parameter
         expect(mockFetch).toHaveBeenCalledWith(
           'https://pokeapi.co/api/v2/pokemon?limit=1000'
         );

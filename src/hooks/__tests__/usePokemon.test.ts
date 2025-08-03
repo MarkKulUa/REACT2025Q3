@@ -3,7 +3,6 @@ import { usePokemon } from '../usePokemon';
 import { PokemonApi } from '../../services/pokemonApi';
 import type { PokemonResponse } from '../../types/pokemon';
 
-// Mock the PokemonApi
 vi.mock('../../services/pokemonApi', () => ({
   PokemonApi: {
     searchPokemon: vi.fn(),
@@ -49,8 +48,8 @@ describe('usePokemon Hook', () => {
         await result.current.searchPokemon('pikachu', 1);
       });
 
-      expect(PokemonApi.searchPokemon).toHaveBeenCalledWith('pikachu', 200); // 20 * 10
-      expect(result.current.pokemon).toHaveLength(20); // First page
+      expect(PokemonApi.searchPokemon).toHaveBeenCalledWith('pikachu', 200);
+      expect(result.current.pokemon).toHaveLength(20);
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBe(null);
       expect(result.current.totalCount).toBe(50);
@@ -67,7 +66,6 @@ describe('usePokemon Hook', () => {
         await result.current.searchPokemon('pokemon', 2);
       });
 
-      // Should return items 21-40 (second page)
       expect(result.current.pokemon).toHaveLength(20);
       expect(result.current.pokemon[0].name).toBe('pokemon-21');
       expect(result.current.pokemon[19].name).toBe('pokemon-40');
@@ -90,7 +88,6 @@ describe('usePokemon Hook', () => {
         await result.current.searchPokemon('pokemon', 2);
       });
 
-      // Should return items 21-25 (5 items on second page)
       expect(result.current.pokemon).toHaveLength(5);
       expect(result.current.pokemon[0].name).toBe('pokemon-21');
       expect(result.current.pokemon[4].name).toBe('pokemon-25');
@@ -106,21 +103,17 @@ describe('usePokemon Hook', () => {
 
       const { result } = renderHook(() => usePokemon());
 
-      // Start search
       act(() => {
         result.current.searchPokemon('test');
       });
 
-      // Should be loading
       expect(result.current.isLoading).toBe(true);
       expect(result.current.error).toBe(null);
 
-      // Complete search
       await act(async () => {
         resolveSearch(mockPokemonResponse);
       });
 
-      // Should no longer be loading
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
@@ -157,7 +150,6 @@ describe('usePokemon Hook', () => {
     });
 
     it('clears previous errors on new search', async () => {
-      // First search fails
       vi.mocked(PokemonApi.searchPokemon).mockRejectedValueOnce(
         new Error('First error')
       );
@@ -170,7 +162,6 @@ describe('usePokemon Hook', () => {
 
       expect(result.current.error).toBe('First error');
 
-      // Second search succeeds
       vi.mocked(PokemonApi.searchPokemon).mockResolvedValue(
         mockPokemonResponse
       );
@@ -222,7 +213,7 @@ describe('usePokemon Hook', () => {
       const { result } = renderHook(() => usePokemon());
 
       await act(async () => {
-        await result.current.searchPokemon('pokemon', 5); // Page way beyond available data
+        await result.current.searchPokemon('pokemon', 5);
       });
 
       expect(result.current.pokemon).toEqual([]);

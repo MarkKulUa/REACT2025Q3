@@ -2,7 +2,6 @@ import { render, screen } from '../../__tests__/test-utils';
 import CardList from '../CardList';
 import { mockPokemonResponse } from '../../__tests__/mocks/pokemonApi';
 
-// Mock Card component to avoid complex rendering
 vi.mock('../Card', () => ({
   default: ({ pokemon }: { pokemon: { name: string } }) => (
     <div data-testid={`card-${pokemon.name}`}>Card: {pokemon.name}</div>
@@ -52,7 +51,6 @@ describe('CardList Component', () => {
     });
 
     it('handles missing props gracefully', () => {
-      // Test with undefined/null values that might happen in edge cases
       render(<CardList pokemon={[]} isLoading={false} error={null} />);
 
       expect(screen.getByText(/no pokemon found/i)).toBeInTheDocument();

@@ -4,7 +4,9 @@ import About from '../About';
 
 describe('About Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
-    return render(<MemoryRouter>{component}</MemoryRouter>);
+    return render(<MemoryRouter>{component}</MemoryRouter>, {
+      needsRouter: false,
+    });
   };
 
   describe('Rendering Tests', () => {
@@ -127,6 +129,14 @@ describe('About Component', () => {
         name: /Back to Pokemon Search/i,
       });
       expect(homeLink).toBeInTheDocument();
+    });
+
+    it('displays theme selector', () => {
+      renderWithRouter(<About />);
+
+      expect(screen.getByText('Theme:')).toBeInTheDocument();
+      expect(screen.getByLabelText('Light')).toBeInTheDocument();
+      expect(screen.getByLabelText('Dark')).toBeInTheDocument();
     });
   });
 });

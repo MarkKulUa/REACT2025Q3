@@ -4,7 +4,9 @@ import NotFound from '../NotFound';
 
 describe('NotFound Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
-    return render(<MemoryRouter>{component}</MemoryRouter>);
+    return render(<MemoryRouter>{component}</MemoryRouter>, {
+      needsRouter: false,
+    });
   };
 
   describe('Rendering Tests', () => {

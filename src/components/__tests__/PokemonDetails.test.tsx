@@ -2,7 +2,6 @@ import { render, screen, fireEvent } from '../../__tests__/test-utils';
 import { MemoryRouter } from 'react-router-dom';
 import PokemonDetails from '../PokemonDetails';
 
-// Mock the usePokemonDetails hook
 vi.mock('../../hooks/usePokemonDetails', () => ({
   usePokemonDetails: vi.fn(() => ({
     details: null,
@@ -11,19 +10,21 @@ vi.mock('../../hooks/usePokemonDetails', () => ({
   })),
 }));
 
-// Mock react-router-dom hooks
+const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
     useParams: vi.fn(() => ({ pokemonName: 'pikachu' })),
-    useNavigate: () => vi.fn(),
+    useNavigate: () => mockNavigate,
   };
 });
 
 describe('PokemonDetails Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
-    return render(<MemoryRouter>{component}</MemoryRouter>);
+    return render(<MemoryRouter>{component}</MemoryRouter>, {
+      needsRouter: false,
+    });
   };
 
   beforeEach(() => {
@@ -49,7 +50,6 @@ describe('PokemonDetails Component', () => {
       const closeButton = screen.getByText('✕ Close');
       expect(closeButton).toBeInTheDocument();
 
-      // Just check that close button exists and is clickable
       fireEvent.click(closeButton);
     });
   });
@@ -60,6 +60,21 @@ describe('PokemonDetails Component', () => {
       expect(
         screen.getByRole('button', { name: /close/i })
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('Click Inside Functionality', () => {
+    it('does not close when clicking inside the component', () => {
+      renderWithRouter(<PokemonDetails />);
+
+      const container = screen.getByText('✕ Close').closest('div');
+      expect(container).toBeInTheDocument();
+
+      if (container) {
+        fireEvent.click(container);
+      }
+
+      expect(mockNavigate).not.toHaveBeenCalled();
     });
   });
 });

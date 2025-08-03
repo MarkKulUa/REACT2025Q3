@@ -12,9 +12,13 @@ const PokemonDetails: React.FC = () => {
     navigate('../', { replace: true });
   };
 
+  const handleContainerClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
   if (isLoading) {
     return (
-      <div className={styles.detailsContainer}>
+      <div className={styles.detailsContainer} onClick={handleContainerClick}>
         <div className={styles.header}>
           <button onClick={handleClose} className={styles.closeButton}>
             ✕ Close
@@ -30,7 +34,7 @@ const PokemonDetails: React.FC = () => {
 
   if (error) {
     return (
-      <div className={styles.detailsContainer}>
+      <div className={styles.detailsContainer} onClick={handleContainerClick}>
         <div className={styles.header}>
           <button onClick={handleClose} className={styles.closeButton}>
             ✕ Close
@@ -46,7 +50,7 @@ const PokemonDetails: React.FC = () => {
 
   if (!details) {
     return (
-      <div className={styles.detailsContainer}>
+      <div className={styles.detailsContainer} onClick={handleContainerClick}>
         <div className={styles.header}>
           <button onClick={handleClose} className={styles.closeButton}>
             ✕ Close
@@ -63,7 +67,7 @@ const PokemonDetails: React.FC = () => {
   const types = details.types.map((t) => t.type.name);
 
   return (
-    <div className={styles.detailsContainer}>
+    <div className={styles.detailsContainer} onClick={handleContainerClick}>
       <div className={styles.header}>
         <h2 className={styles.pokemonName}>{details.name}</h2>
         <button onClick={handleClose} className={styles.closeButton}>

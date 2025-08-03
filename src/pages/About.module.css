@@ -5,13 +5,34 @@
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   line-height: 1.6;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .title {
-  color: #2c3e50;
+  color: var(--text-color);
   text-align: center;
-  margin-bottom: 2rem;
+  margin: 0;
   font-size: 2.5rem;
+  transition: color 0.2s ease;
+  flex: 1;
+}
+
+.themeSelectorContainer {
+  display: flex;
+  align-items: center;
 }
 
 .authorSection,
@@ -19,17 +40,19 @@
 .featuresSection {
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: #f8f9fa;
+  background: var(--card-bg);
   border-radius: 8px;
   border-left: 4px solid #3498db;
+  transition: background-color 0.2s ease;
 }
 
 .authorSection h2,
 .courseSection h2,
 .featuresSection h2 {
-  color: #2c3e50;
+  color: var(--text-color);
   margin-bottom: 1rem;
   font-size: 1.5rem;
+  transition: color 0.2s ease;
 }
 
 .courseLink {
@@ -57,6 +80,8 @@
   position: relative;
   padding-left: 1.5rem;
   margin-bottom: 0.5rem;
+  color: var(--text-color);
+  transition: color 0.2s ease;
 }
 
 .featuresList li::before {
@@ -71,7 +96,8 @@
   text-align: center;
   margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-color);
+  transition: border-color 0.2s ease;
 }
 
 .homeLink {
@@ -89,4 +115,82 @@
   background-color: #3498db;
   color: white;
   transform: translateY(-2px);
+}
+
+/* Dark theme specific overrides */
+[data-theme='dark'] .aboutContainer {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+[data-theme='dark'] .headerSection {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+
+[data-theme='dark'] .title {
+  color: var(--text-color);
+}
+
+[data-theme='dark'] .authorSection,
+[data-theme='dark'] .courseSection,
+[data-theme='dark'] .featuresSection {
+  background: var(--card-bg);
+  border-left-color: #60a5fa;
+}
+
+[data-theme='dark'] .authorSection h2,
+[data-theme='dark'] .courseSection h2,
+[data-theme='dark'] .featuresSection h2 {
+  color: var(--text-color);
+}
+
+[data-theme='dark'] .featuresList li {
+  color: var(--text-color);
+}
+
+[data-theme='dark'] .navigationSection {
+  border-top-color: var(--border-color);
+}
+
+[data-theme='dark'] .courseLink {
+  color: #60a5fa;
+  border-color: #60a5fa;
+}
+
+[data-theme='dark'] .courseLink:hover {
+  background-color: #60a5fa;
+  color: #1f2937;
+}
+
+[data-theme='dark'] .homeLink {
+  color: #60a5fa;
+  border-color: #60a5fa;
+}
+
+[data-theme='dark'] .homeLink:hover {
+  background-color: #60a5fa;
+  color: #1f2937;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .headerSection {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .themeSelectorContainer {
+    margin-top: 1rem;
+  }
+
+  .aboutContainer {
+    padding: 1rem;
+  }
 }
