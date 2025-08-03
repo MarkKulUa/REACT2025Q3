@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import ThemeSelector from './ThemeSelector';
 import styles from './Header.module.css';
 
 interface HeaderProps {
@@ -32,24 +33,35 @@ const Header: React.FC<HeaderProps> = ({ onSearch, isLoading }) => {
   };
 
   return (
-    <div className={styles.headerContainer}>
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyPress}
-        placeholder="Search Pokemon..."
-        disabled={isLoading}
-        className={styles.searchInput}
-      />
-      <button
-        onClick={handleSearch}
-        disabled={isLoading}
-        className={styles.searchButton}
-      >
-        {isLoading ? 'Searching...' : 'Search'}
-      </button>
-    </div>
+    <header className={styles.header}>
+      <div className={styles.headerTop}>
+        <div className={styles.titleContainer}>
+          <h1 className={styles.title}>Pokemon Search</h1>
+          <p className={styles.subtitle}>
+            Search for your favorite Pokemon and explore their details
+          </p>
+        </div>
+        <ThemeSelector />
+      </div>
+      <div className={styles.searchContainer}>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyPress}
+          placeholder="Search Pokemon..."
+          disabled={isLoading}
+          className={styles.searchInput}
+        />
+        <button
+          onClick={handleSearch}
+          disabled={isLoading}
+          className={styles.searchButton}
+        >
+          {isLoading ? 'Searching...' : 'Search'}
+        </button>
+      </div>
+    </header>
   );
 };
 
