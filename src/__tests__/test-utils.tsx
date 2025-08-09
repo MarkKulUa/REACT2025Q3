@@ -8,12 +8,16 @@ import { configureStore } from '@reduxjs/toolkit';
 import selectedItemsReducer from '../store/slices/selectedItemsSlice';
 import type { RootState } from '../store/store';
 import { ThemeProvider } from '../contexts/ThemeContext';
+import { rtkPokemonApi } from '../store/rtkPokemonApi';
 
 export const createTestStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({
     reducer: {
       selectedItems: selectedItemsReducer,
+      [rtkPokemonApi.reducerPath]: rtkPokemonApi.reducer,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(rtkPokemonApi.middleware),
     preloadedState: preloadedState as RootState | undefined,
   });
 };
