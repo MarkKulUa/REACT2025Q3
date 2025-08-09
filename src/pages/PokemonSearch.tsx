@@ -22,7 +22,8 @@ const PokemonSearch: React.FC = () => {
   const navigate = useNavigate();
   const params = useParams();
   const [searchParams] = useSearchParams();
-  const { pokemon, isLoading, error, searchPokemon, totalCount } = usePokemon();
+  const { pokemon, isLoading, error, searchPokemon, totalCount, refetch } =
+    usePokemon();
   const [searchTerm, setSearchTerm] = useLocalStorage(
     'pokemon-search-term',
     ''
@@ -45,6 +46,11 @@ const PokemonSearch: React.FC = () => {
     },
     [searchPokemon, setSearchTerm, navigate]
   );
+
+  const handleRefresh = useCallback(() => {
+    // Force a re-fetch from the server bypassing cache
+    refetch();
+  }, [refetch]);
 
   const handlePageChange = useCallback(
     (page: number) => {
@@ -91,7 +97,11 @@ const PokemonSearch: React.FC = () => {
   return (
     <div className={styles.searchContainer}>
       <div className={styles.searchSection}>
-        <Header onSearch={handleSearch} isLoading={isLoading} />
+        <Header
+          onSearch={handleSearch}
+          isLoading={isLoading}
+          onRefresh={handleRefresh}
+        />
         <Main
           pokemon={pokemon}
           isLoading={isLoading}

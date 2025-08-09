@@ -6,9 +6,10 @@ import styles from './Header.module.css';
 interface HeaderProps {
   onSearch: (searchTerm: string) => void;
   isLoading: boolean;
+  onRefresh?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onSearch, isLoading }) => {
+const Header: React.FC<HeaderProps> = ({ onSearch, isLoading, onRefresh }) => {
   const STORAGE_KEY = 'pokemon-search-term';
   const [searchTerm, setSearchTerm] = useLocalStorage(STORAGE_KEY, '');
 
@@ -60,6 +61,17 @@ const Header: React.FC<HeaderProps> = ({ onSearch, isLoading }) => {
         >
           {isLoading ? 'Searching...' : 'Search'}
         </button>
+        {onRefresh && (
+          <button
+            onClick={onRefresh}
+            disabled={isLoading}
+            className={styles.searchButton}
+            aria-label="Refresh results"
+            title="Refresh"
+          >
+            Refresh
+          </button>
+        )}
       </div>
     </header>
   );

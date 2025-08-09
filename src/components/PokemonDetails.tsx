@@ -6,10 +6,16 @@ import styles from './PokemonDetails.module.css';
 const PokemonDetails: React.FC = () => {
   const { pokemonName } = useParams<{ pokemonName: string }>();
   const navigate = useNavigate();
-  const { details, isLoading, error } = usePokemonDetails(pokemonName || null);
+  const { details, isLoading, error, refetch } = usePokemonDetails(
+    pokemonName || null
+  );
 
   const handleClose = () => {
     navigate('../', { replace: true });
+  };
+
+  const handleRefresh = () => {
+    refetch();
   };
 
   const handleContainerClick = (event: React.MouseEvent) => {
@@ -20,6 +26,13 @@ const PokemonDetails: React.FC = () => {
     return (
       <div className={styles.detailsContainer} onClick={handleContainerClick}>
         <div className={styles.header}>
+          <button
+            onClick={handleRefresh}
+            className={styles.closeButton}
+            disabled={isLoading}
+          >
+            ↻ Refresh
+          </button>
           <button onClick={handleClose} className={styles.closeButton}>
             ✕ Close
           </button>
@@ -36,6 +49,9 @@ const PokemonDetails: React.FC = () => {
     return (
       <div className={styles.detailsContainer} onClick={handleContainerClick}>
         <div className={styles.header}>
+          <button onClick={handleRefresh} className={styles.closeButton}>
+            ↻ Refresh
+          </button>
           <button onClick={handleClose} className={styles.closeButton}>
             ✕ Close
           </button>
@@ -52,6 +68,9 @@ const PokemonDetails: React.FC = () => {
     return (
       <div className={styles.detailsContainer} onClick={handleContainerClick}>
         <div className={styles.header}>
+          <button onClick={handleRefresh} className={styles.closeButton}>
+            ↻ Refresh
+          </button>
           <button onClick={handleClose} className={styles.closeButton}>
             ✕ Close
           </button>
@@ -70,9 +89,18 @@ const PokemonDetails: React.FC = () => {
     <div className={styles.detailsContainer} onClick={handleContainerClick}>
       <div className={styles.header}>
         <h2 className={styles.pokemonName}>{details.name}</h2>
-        <button onClick={handleClose} className={styles.closeButton}>
-          ✕ Close
-        </button>
+        <div className={styles.buttonGroup}>
+          <button
+            onClick={handleRefresh}
+            className={styles.closeButton}
+            disabled={isLoading}
+          >
+            ↻ Refresh
+          </button>
+          <button onClick={handleClose} className={styles.closeButton}>
+            ✕ Close
+          </button>
+        </div>
       </div>
 
       <div className={styles.content}>

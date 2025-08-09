@@ -26,6 +26,11 @@
   text-transform: capitalize;
 }
 
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .closeButton {
   background: #e74c3c;
   color: white;
@@ -37,8 +42,13 @@
   transition: background-color 0.3s ease;
 }
 
-.closeButton:hover {
+.closeButton:hover:not(:disabled) {
   background: #c0392b;
+}
+
+.closeButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .content {
