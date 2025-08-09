@@ -1,51 +1,72 @@
-import { useState, useEffect } from 'react';
+import { useMemo, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import type { PokemonDetails } from '../types/pokemon';
-import { PokemonApi } from '../services/pokemonApi';
+import {
+  useGetPokemonDetailsQuery,
+  rtkPokemonApi,
+} from '../store/rtkPokemonApi';
 
 interface UsePokemonDetailsResult {
   details: PokemonDetails | null;
   isLoading: boolean;
   error: string | null;
+  refetch: () => void;
 }
 
 export function usePokemonDetails(
   pokemonName: string | null
 ): UsePokemonDetailsResult {
-  const [details, setDetails] = useState<PokemonDetails | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const shouldSkip = !pokemonName || pokemonName.trim() === '';
 
-  useEffect(() => {
-    if (!pokemonName) {
-      setDetails(null);
-      setIsLoading(false);
-      setError(null);
-      return;
-    }
+  const { data, isFetching, error, refetch } = useGetPokemonDetailsQuery(
+    pokemonName as string,
+    { skip: shouldSkip, refetchOnMountOrArgChange: true }
+  );
 
-    const fetchDetails = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const pokemonDetails = await PokemonApi.getPokemonDetails(pokemonName);
-        setDetails(pokemonDetails);
-        setIsLoading(false);
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : 'Unknown error occurred';
-        setError(errorMessage);
-        setDetails(null);
-        setIsLoading(false);
+  const errorMessage = useMemo(() => {
+    if (!error) return null;
+    if (
+      error &&
+      typeof error === 'object' &&
+      'status' in error &&
+      error.status !== undefined
+    ) {
+      const errorData = error as { status: unknown; data: unknown };
+      if (typeof errorData.data === 'string') return errorData.data;
+      if (
+        errorData.data &&
+        typeof (errorData.data as { message?: string }).message === 'string'
+      ) {
+        return (errorData.data as { message: string }).message;
       }
-    };
+      return `HTTP error${typeof error.status === 'number' ? `! status: ${error.status}` : ''}`;
+    }
+    if (
+      error &&
+      typeof error === 'object' &&
+      'message' in error &&
+      typeof (error as { message?: string }).message === 'string'
+    )
+      return (error as { message: string }).message;
+    return 'Unknown error occurred';
+  }, [error]);
 
-    fetchDetails();
-  }, [pokemonName]);
+  const handleRefetch = useCallback(() => {
+    if (pokemonName) {
+      dispatch(
+        rtkPokemonApi.util.invalidateTags([
+          { type: 'PokemonDetails', id: pokemonName },
+        ])
+      );
+      refetch();
+    }
+  }, [dispatch, pokemonName, refetch]);
 
   return {
-    details,
-    isLoading,
-    error,
+    details: data ?? null,
+    isLoading: !shouldSkip && isFetching,
+    error: errorMessage,
+    refetch: handleRefetch,
   };
 }
