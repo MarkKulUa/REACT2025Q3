@@ -1,0 +1,34 @@
+.languageSelector {
+  display: flex;
+  gap: 0.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  background: var(--background-color);
+}
+
+.languageButton {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.languageButton:hover {
+  background: var(--accent-hover);
+}
+
+.languageButton.active {
+  background: var(--accent-color);
+  color: white;
+}
+
+.languageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

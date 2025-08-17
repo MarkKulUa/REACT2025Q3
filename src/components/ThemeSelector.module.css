@@ -1,0 +1,64 @@
+.themeSelector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.options {
+  display: flex;
+  gap: 16px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+}
+
+.radio {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.optionText {
+  cursor: pointer;
+  user-select: none;
+}
+
+.option:hover .optionText {
+  color: #3b82f6;
+}
+
+/* Dark theme support */
+[data-theme='dark'] .themeSelector {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+[data-theme='dark'] .label {
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .option {
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .option:hover .optionText {
+  color: #60a5fa;
+}

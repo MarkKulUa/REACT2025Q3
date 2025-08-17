@@ -1,0 +1,120 @@
+.cardContainer {
+  border: 1px solid var(--border-color, #dee2e6);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px;
+  background-color: var(--card-bg, white);
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  min-height: 100px;
+  position: relative;
+}
+
+.cardContainer.selected {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.checkboxContainer {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.cardContainer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.loadingCard {
+  background-color: #f8f9fa;
+}
+
+.errorCard {
+  border: 1px solid #f5c6cb;
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Dark theme support for cards */
+[data-theme='dark'] .cardContainer {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+[data-theme='dark'] .pokemonName {
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .pokemonDescription {
+  color: #d1d5db;
+}
+
+[data-theme='dark'] .loadingCard {
+  background-color: #374151;
+}
+
+[data-theme='dark'] .loadingText,
+[data-theme='dark'] .loadingSubtext {
+  color: #d1d5db;
+}
+
+.pokemonImage {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.cardContent {
+  margin-left: 16px;
+  flex: 1;
+}
+
+.pokemonName {
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: capitalize;
+  margin-bottom: 4px;
+  color: var(--text-color, #333);
+}
+
+.pokemonDescription {
+  font-size: 14px;
+  color: #6c757d;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.loadingText {
+  font-size: 18px;
+  font-weight: bold;
+  color: #6c757d;
+}
+
+.loadingSubtext {
+  font-size: 14px;
+  color: #6c757d;
+  margin-top: 4px;
+}
+
+.errorTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.errorMessage {
+  font-size: 14px;
+}

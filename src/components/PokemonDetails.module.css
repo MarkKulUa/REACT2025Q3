@@ -1,0 +1,251 @@
+.detailsContainer {
+  height: 100%;
+  background: var(--card-bg, white);
+  border-left: 1px solid var(--border-color, #e0e0e0);
+  overflow-y: auto;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  background: var(--header-bg, #f8f9fa);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.pokemonName {
+  margin: 0;
+  color: var(--text-color, #2c3e50);
+  font-size: 1.5rem;
+  text-transform: capitalize;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.closeButton {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.closeButton:hover:not(:disabled) {
+  background: #c0392b;
+}
+
+.closeButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.content {
+  padding: 1.5rem;
+}
+
+.imageContainer {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.pokemonImage {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  background: var(--image-bg, #f8f9fa);
+  border-radius: 8px;
+  border: 2px solid var(--border-color, #e0e0e0);
+}
+
+.infoGrid {
+  display: grid;
+  gap: 1rem;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--info-bg, #f8f9fa);
+  border-radius: 6px;
+  border-left: 4px solid #3498db;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--text-color, #2c3e50);
+  min-width: 80px;
+}
+
+.value {
+  color: var(--text-secondary, #7f8c8d);
+  font-weight: 500;
+}
+
+.typesContainer {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.typeTag {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: white;
+  background: #95a5a6;
+}
+
+/* Pokemon type colors */
+.type-normal {
+  background: #a8a878;
+}
+.type-fire {
+  background: #f08030;
+}
+.type-water {
+  background: #6890f0;
+}
+.type-electric {
+  background: #f8d030;
+}
+.type-grass {
+  background: #78c850;
+}
+.type-ice {
+  background: #98d8d8;
+}
+.type-fighting {
+  background: #c03028;
+}
+.type-poison {
+  background: #a040a0;
+}
+.type-ground {
+  background: #e0c068;
+}
+.type-flying {
+  background: #a890f0;
+}
+.type-psychic {
+  background: #f85888;
+}
+.type-bug {
+  background: #a8b820;
+}
+.type-rock {
+  background: #b8a038;
+}
+.type-ghost {
+  background: #705898;
+}
+.type-dragon {
+  background: #7038f8;
+}
+.type-dark {
+  background: #705848;
+}
+.type-steel {
+  background: #b8b8d0;
+}
+.type-fairy {
+  background: #ee99ac;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: var(--text-secondary, #7f8c8d);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--spinner-bg, #f3f3f3);
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.errorContainer {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary, #7f8c8d);
+}
+
+.errorContainer h3 {
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+/* Dark theme support */
+[data-theme='dark'] .detailsContainer {
+  background: #1f2937;
+  border-left-color: #374151;
+}
+
+[data-theme='dark'] .header {
+  background: #374151;
+  border-bottom-color: #4b5563;
+}
+
+[data-theme='dark'] .pokemonName {
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .pokemonImage {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+[data-theme='dark'] .infoItem {
+  background: #374151;
+}
+
+[data-theme='dark'] .label {
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .value {
+  color: #d1d5db;
+}
+
+[data-theme='dark'] .loadingContainer {
+  color: #d1d5db;
+}
+
+[data-theme='dark'] .spinner {
+  border-color: #4b5563;
+}
+
+[data-theme='dark'] .errorContainer {
+  color: #d1d5db;
+}
