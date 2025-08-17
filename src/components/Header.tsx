@@ -1,6 +1,10 @@
+'use client';
+
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import ThemeSelector from './ThemeSelector';
+import LanguageSelector from './LanguageSelector';
 import styles from './Header.module.css';
 
 interface HeaderProps {
@@ -10,6 +14,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onSearch, isLoading, onRefresh }) => {
+  const t = useTranslations('search');
   const STORAGE_KEY = 'pokemon-search-term';
   const [searchTerm, setSearchTerm] = useLocalStorage(STORAGE_KEY, '');
 
@@ -37,12 +42,15 @@ const Header: React.FC<HeaderProps> = ({ onSearch, isLoading, onRefresh }) => {
     <header className={styles.header}>
       <div className={styles.headerTop}>
         <div className={styles.titleContainer}>
-          <h1 className={styles.title}>Pokemon Search</h1>
+          <h1 className={styles.title}>{t('title')}</h1>
           <p className={styles.subtitle}>
             Search for your favorite Pokemon and explore their details
           </p>
         </div>
-        <ThemeSelector />
+        <div className={styles.controls}>
+          <LanguageSelector />
+          <ThemeSelector />
+        </div>
       </div>
       <div className={styles.searchContainer}>
         <input
@@ -50,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, isLoading, onRefresh }) => {
           value={searchTerm}
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
-          placeholder="Search Pokemon..."
+          placeholder={t('placeholder')}
           disabled={isLoading}
           className={styles.searchInput}
         />
@@ -59,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, isLoading, onRefresh }) => {
           disabled={isLoading}
           className={styles.searchButton}
         >
-          {isLoading ? 'Searching...' : 'Search'}
+          {isLoading ? t('loading') : t('button')}
         </button>
         {onRefresh && (
           <button

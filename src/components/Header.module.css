@@ -16,6 +16,12 @@
   flex: 1;
 }
 
+.controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 .title {
   margin: 0 0 0.5rem 0;
   font-size: 2rem;

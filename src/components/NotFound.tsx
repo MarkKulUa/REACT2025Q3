@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styles from './NotFound.module.css';
 
 const NotFound: React.FC = () => {
@@ -14,12 +13,12 @@ const NotFound: React.FC = () => {
         </p>
 
         <div className={styles.navigation}>
-          <Link to="/" className={styles.homeButton}>
-            🏠 Go to Home
-          </Link>
-          <Link to="/about" className={styles.aboutButton}>
+          <a href="/" className={styles.homeButton}>
+            🏠 Go Home
+          </a>
+          <a href="/about" className={styles.aboutButton}>
             ℹ️ About Page
-          </Link>
+          </a>
         </div>
 
         <div className={styles.pokemonEmoji}>🔍 No Pokemon found here!</div>

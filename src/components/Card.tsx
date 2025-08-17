@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import Image from 'next/image';
 import { usePokemonDetails } from '../hooks/usePokemonDetails';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
@@ -116,9 +119,11 @@ const Card: React.FC<CardProps> = ({ pokemon, onClick }) => {
         />
       </div>
       {details.sprites.front_default && (
-        <img
+        <Image
           src={details.sprites.front_default}
           alt={pokemon.name}
+          width={96}
+          height={96}
           className={styles.pokemonImage}
         />
       )}

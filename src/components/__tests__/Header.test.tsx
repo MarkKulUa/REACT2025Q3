@@ -1,5 +1,33 @@
-import { render, screen, fireEvent } from '../../__tests__/test-utils';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
 import Header from '../Header';
+
+// Mock next-intl
+vi.mock('next-intl', async () => {
+  const actual = await vi.importActual('next-intl');
+  return {
+    ...actual,
+    useTranslations: vi.fn(() => (key: string) => {
+      const translations: Record<string, string> = {
+        title: 'Pokémon Search',
+        placeholder: 'Search Pokémon...',
+        button: 'Search',
+        loading: 'Loading...',
+      };
+      return translations[key] || key;
+    }),
+  };
+});
+
+// Mock ThemeSelector
+vi.mock('../ThemeSelector', () => ({
+  default: () => <div data-testid="theme-selector">Theme Selector</div>,
+}));
+
+// Mock LanguageSelector
+vi.mock('../LanguageSelector', () => ({
+  default: () => <div data-testid="language-selector">Language Selector</div>,
+}));
 
 const localStorageMock = {
   getItem: vi.fn(),
@@ -12,6 +40,15 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
+const messages = {
+  search: {
+    title: 'Pokémon Search',
+    placeholder: 'Search Pokémon...',
+    button: 'Search',
+    loading: 'Loading...',
+  },
+};
+
 describe('Header Component', () => {
   const mockOnSearch = vi.fn();
 
@@ -20,116 +57,173 @@ describe('Header Component', () => {
     localStorageMock.getItem.mockReturnValue(null);
   });
 
-  describe('Rendering Tests', () => {
-    it('renders search input and search button', () => {
-      render(<Header onSearch={mockOnSearch} isLoading={false} />);
+  const renderHeader = (isLoading = false, onRefresh?: () => void) => {
+    return render(
+      <NextIntlClientProvider messages={messages} locale="en">
+        <Header
+          onSearch={mockOnSearch}
+          isLoading={isLoading}
+          onRefresh={onRefresh}
+        />
+      </NextIntlClientProvider>
+    );
+  };
+
+  describe('Rendering', () => {
+    it('renders header with title', () => {
+      renderHeader();
+
+      expect(screen.getByText('Pokémon Search')).toBeInTheDocument();
+    });
+
+    it('renders search input with placeholder', () => {
+      renderHeader();
 
       expect(
-        screen.getByPlaceholderText(/search pokemon/i)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('button', { name: /search/i })
+        screen.getByPlaceholderText('Search Pokémon...')
       ).toBeInTheDocument();
     });
 
-    it('displays previously saved search term from localStorage on mount', () => {
-      const savedTerm = 'pikachu';
-      localStorageMock.getItem.mockReturnValue(savedTerm);
+    it('renders search button', () => {
+      renderHeader();
 
-      render(<Header onSearch={mockOnSearch} isLoading={false} />);
-
-      expect(screen.getByDisplayValue(savedTerm)).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Search' })
+      ).toBeInTheDocument();
     });
 
-    it('shows empty input when no saved term exists', () => {
-      localStorageMock.getItem.mockReturnValue(null);
+    it('renders theme selector', () => {
+      renderHeader();
 
-      render(<Header onSearch={mockOnSearch} isLoading={false} />);
+      expect(screen.getByTestId('theme-selector')).toBeInTheDocument();
+    });
 
-      const input = screen.getByPlaceholderText(/search pokemon/i);
-      expect(input).toHaveValue('');
+    it('renders language selector', () => {
+      renderHeader();
+
+      expect(screen.getByTestId('language-selector')).toBeInTheDocument();
     });
   });
 
-  describe('User Interaction Tests', () => {
-    it('updates input value when user types', () => {
-      render(<Header onSearch={mockOnSearch} isLoading={false} />);
+  describe('Search Functionality', () => {
+    it('calls onSearch when search button is clicked', () => {
+      renderHeader();
 
-      const input = screen.getByPlaceholderText(/search pokemon/i);
-      fireEvent.change(input, { target: { value: 'bulbasaur' } });
+      const searchInput = screen.getByPlaceholderText('Search Pokémon...');
+      const searchButton = screen.getByRole('button', { name: 'Search' });
 
-      expect(input).toHaveValue('bulbasaur');
-    });
-
-    it('saves search term to localStorage when search button is clicked', () => {
-      render(<Header onSearch={mockOnSearch} isLoading={false} />);
-
-      const input = screen.getByPlaceholderText(/search pokemon/i);
-      const searchButton = screen.getByRole('button', { name: /search/i });
-
-      fireEvent.change(input, { target: { value: 'charizard' } });
+      fireEvent.change(searchInput, { target: { value: 'pikachu' } });
       fireEvent.click(searchButton);
 
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'pokemon-search-term',
-        'charizard'
-      );
+      expect(mockOnSearch).toHaveBeenCalledWith('pikachu');
     });
 
-    it('trims whitespace from search input before saving', () => {
-      render(<Header onSearch={mockOnSearch} isLoading={false} />);
+    it('calls onSearch when Enter key is pressed', () => {
+      renderHeader();
 
-      const input = screen.getByPlaceholderText(/search pokemon/i);
-      const searchButton = screen.getByRole('button', { name: /search/i });
+      const searchInput = screen.getByPlaceholderText('Search Pokémon...');
 
-      fireEvent.change(input, { target: { value: '  pikachu  ' } });
-      fireEvent.click(searchButton);
+      fireEvent.change(searchInput, { target: { value: 'charizard' } });
+      fireEvent.keyDown(searchInput, { key: 'Enter', code: 'Enter' });
 
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'pokemon-search-term',
-        'pikachu'
-      );
+      expect(mockOnSearch).toHaveBeenCalledWith('charizard');
     });
 
-    it('triggers search callback with correct parameters', () => {
-      render(<Header onSearch={mockOnSearch} isLoading={false} />);
+    it('trims search term before calling onSearch', () => {
+      renderHeader();
 
-      const input = screen.getByPlaceholderText(/search pokemon/i);
-      const searchButton = screen.getByRole('button', { name: /search/i });
+      const searchInput = screen.getByPlaceholderText('Search Pokémon...');
+      const searchButton = screen.getByRole('button', { name: 'Search' });
 
-      fireEvent.change(input, { target: { value: 'squirtle' } });
+      fireEvent.change(searchInput, { target: { value: '  pikachu  ' } });
       fireEvent.click(searchButton);
 
-      expect(mockOnSearch).toHaveBeenCalledWith('squirtle');
+      expect(mockOnSearch).toHaveBeenCalledWith('pikachu');
     });
   });
 
-  describe('LocalStorage Integration', () => {
-    it('retrieves saved search term on component mount', () => {
-      const savedTerm = 'mewtwo';
-      localStorageMock.getItem.mockReturnValue(savedTerm);
+  describe('Loading State', () => {
+    it('disables input and button when loading', () => {
+      renderHeader(true);
 
-      render(<Header onSearch={mockOnSearch} isLoading={false} />);
+      const searchInput = screen.getByPlaceholderText('Search Pokémon...');
+      const searchButton = screen.getByRole('button', { name: 'Loading...' });
 
-      expect(localStorageMock.getItem).toHaveBeenCalledWith(
-        'pokemon-search-term'
-      );
+      expect(searchInput).toBeDisabled();
+      expect(searchButton).toBeDisabled();
     });
 
-    it('overwrites existing localStorage value when new search is performed', () => {
-      localStorageMock.getItem.mockReturnValue('old-search');
+    it('shows loading text on button when loading', () => {
+      renderHeader(true);
 
-      render(<Header onSearch={mockOnSearch} isLoading={false} />);
+      expect(
+        screen.getByRole('button', { name: 'Loading...' })
+      ).toBeInTheDocument();
+    });
+  });
 
-      const input = screen.getByPlaceholderText(/search pokemon/i);
-      const searchButton = screen.getByRole('button', { name: /search/i });
+  describe('Refresh Button', () => {
+    it('renders refresh button when onRefresh is provided', () => {
+      const mockOnRefresh = vi.fn();
+      renderHeader(false, mockOnRefresh);
 
-      fireEvent.change(input, { target: { value: 'new-search' } });
+      expect(
+        screen.getByRole('button', { name: 'Refresh results' })
+      ).toBeInTheDocument();
+    });
+
+    it('does not render refresh button when onRefresh is not provided', () => {
+      renderHeader();
+
+      expect(
+        screen.queryByRole('button', { name: 'Refresh results' })
+      ).not.toBeInTheDocument();
+    });
+
+    it('calls onRefresh when refresh button is clicked', () => {
+      const mockOnRefresh = vi.fn();
+      renderHeader(false, mockOnRefresh);
+
+      const refreshButton = screen.getByRole('button', {
+        name: 'Refresh results',
+      });
+      fireEvent.click(refreshButton);
+
+      expect(mockOnRefresh).toHaveBeenCalledTimes(1);
+    });
+
+    it('disables refresh button when loading', () => {
+      const mockOnRefresh = vi.fn();
+      renderHeader(true, mockOnRefresh);
+
+      const refreshButton = screen.getByRole('button', {
+        name: 'Refresh results',
+      });
+      expect(refreshButton).toBeDisabled();
+    });
+  });
+
+  describe('Local Storage Integration', () => {
+    it('loads initial search term from localStorage', () => {
+      localStorageMock.getItem.mockReturnValue('stored-pokemon');
+      renderHeader();
+
+      const searchInput = screen.getByPlaceholderText('Search Pokémon...');
+      expect(searchInput).toHaveValue('stored-pokemon');
+    });
+
+    it('saves search term to localStorage when searching', () => {
+      renderHeader();
+
+      const searchInput = screen.getByPlaceholderText('Search Pokémon...');
+      const searchButton = screen.getByRole('button', { name: 'Search' });
+
+      fireEvent.change(searchInput, { target: { value: 'bulbasaur' } });
       fireEvent.click(searchButton);
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'pokemon-search-term',
-        'new-search'
+        'bulbasaur'
       );
     });
   });

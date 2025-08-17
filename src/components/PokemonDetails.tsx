@@ -1,17 +1,21 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import Image from 'next/image';
 import { usePokemonDetails } from '../hooks/usePokemonDetails';
 import styles from './PokemonDetails.module.css';
 
-const PokemonDetails: React.FC = () => {
-  const { pokemonName } = useParams<{ pokemonName: string }>();
-  const navigate = useNavigate();
-  const { details, isLoading, error, refetch } = usePokemonDetails(
-    pokemonName || null
-  );
+interface PokemonDetailsProps {
+  pokemonName: string;
+  onClose?: () => void;
+}
+
+const PokemonDetails: React.FC<PokemonDetailsProps> = ({
+  pokemonName,
+  onClose,
+}) => {
+  const { details, isLoading, error, refetch } = usePokemonDetails(pokemonName);
 
   const handleClose = () => {
-    navigate('../', { replace: true });
+    onClose?.();
   };
 
   const handleRefresh = () => {
@@ -106,9 +110,11 @@ const PokemonDetails: React.FC = () => {
       <div className={styles.content}>
         {details.sprites.front_default && (
           <div className={styles.imageContainer}>
-            <img
+            <Image
               src={details.sprites.front_default}
               alt={details.name}
+              width={200}
+              height={200}
               className={styles.pokemonImage}
             />
           </div>

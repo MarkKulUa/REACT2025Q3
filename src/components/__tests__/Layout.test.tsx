@@ -1,35 +1,65 @@
-import { render, screen } from '../../__tests__/test-utils';
-import { MemoryRouter } from 'react-router-dom';
+import { render, screen } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
 import Layout from '../Layout';
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+// Mock next-intl navigation
+vi.mock('@/lib/navigation', () => ({
+  Link: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+  usePathname: vi.fn(() => '/'),
+}));
+
+// Mock next-intl useTranslations
+vi.mock('next-intl', async () => {
+  const actual = await vi.importActual('next-intl');
   return {
     ...actual,
-    Outlet: () => <div data-testid="outlet-content">Page Content</div>,
-    useLocation: vi.fn(() => ({ pathname: '/' })),
+    useTranslations: vi.fn(() => (key: string) => {
+      const translations: Record<string, string> = {
+        pokemon: 'Pokemon Search',
+        about: 'About',
+      };
+      return translations[key] || key;
+    }),
   };
 });
 
+const messages = {
+  header: {
+    pokemon: 'Pokemon Search',
+    about: 'About',
+  },
+};
+
 describe('Layout Component', () => {
-  const renderWithRouter = (initialPath = '/') => {
+  const renderLayout = (children = <div>Test Content</div>) => {
     return render(
-      <MemoryRouter initialEntries={[initialPath]}>
-        <Layout />
-      </MemoryRouter>,
-      { needsRouter: false }
+      <NextIntlClientProvider messages={messages} locale="en">
+        <Layout>{children}</Layout>
+      </NextIntlClientProvider>
     );
   };
 
   describe('Navigation Tests', () => {
     it('renders navigation bar', () => {
-      renderWithRouter();
+      renderLayout();
 
       expect(screen.getByRole('navigation')).toBeInTheDocument();
     });
 
     it('displays Pokemon Search link', () => {
-      renderWithRouter();
+      renderLayout();
 
       const searchLink = screen.getByText('🔍 Pokemon Search');
       expect(searchLink).toBeInTheDocument();
@@ -37,7 +67,7 @@ describe('Layout Component', () => {
     });
 
     it('displays About link', () => {
-      renderWithRouter();
+      renderLayout();
 
       const aboutLink = screen.getByText('ℹ️ About');
       expect(aboutLink).toBeInTheDocument();
@@ -45,7 +75,7 @@ describe('Layout Component', () => {
     });
 
     it('has proper link roles for accessibility', () => {
-      renderWithRouter();
+      renderLayout();
 
       expect(
         screen.getByRole('link', { name: /Pokemon Search/i })
@@ -56,37 +86,37 @@ describe('Layout Component', () => {
 
   describe('Content Rendering', () => {
     it('renders main content area', () => {
-      renderWithRouter();
+      renderLayout();
 
       expect(screen.getByRole('main')).toBeInTheDocument();
     });
 
-    it('renders outlet content', () => {
-      renderWithRouter();
+    it('renders children content', () => {
+      renderLayout(<div data-testid="test-content">Custom Content</div>);
 
-      expect(screen.getByTestId('outlet-content')).toBeInTheDocument();
-      expect(screen.getByText('Page Content')).toBeInTheDocument();
+      expect(screen.getByTestId('test-content')).toBeInTheDocument();
+      expect(screen.getByText('Custom Content')).toBeInTheDocument();
     });
 
-    it('contains outlet within main content', () => {
-      renderWithRouter();
+    it('contains children within main content', () => {
+      renderLayout(<div data-testid="test-content">Custom Content</div>);
 
       const main = screen.getByRole('main');
-      const outlet = screen.getByTestId('outlet-content');
-      expect(main).toContainElement(outlet);
+      const content = screen.getByTestId('test-content');
+      expect(main).toContainElement(content);
     });
   });
 
   describe('Layout Structure', () => {
     it('has proper semantic HTML structure', () => {
-      renderWithRouter();
+      renderLayout();
 
       expect(screen.getByRole('navigation')).toBeInTheDocument();
       expect(screen.getByRole('main')).toBeInTheDocument();
     });
 
     it('maintains proper hierarchy', () => {
-      renderWithRouter();
+      renderLayout();
 
       const container = document.querySelector('[class*="layoutContainer"]');
       const nav = screen.getByRole('navigation');
@@ -99,7 +129,7 @@ describe('Layout Component', () => {
 
   describe('Navigation Links', () => {
     it('all navigation links are accessible', () => {
-      renderWithRouter();
+      renderLayout();
 
       const links = screen.getAllByRole('link');
       expect(links).toHaveLength(2);
@@ -111,7 +141,7 @@ describe('Layout Component', () => {
     });
 
     it('links have meaningful text content', () => {
-      renderWithRouter();
+      renderLayout();
 
       const searchLink = screen.getByRole('link', { name: /Pokemon Search/i });
       const aboutLink = screen.getByRole('link', { name: /About/i });
@@ -121,39 +151,23 @@ describe('Layout Component', () => {
     });
   });
 
-  describe('Responsive Behavior', () => {
-    it('maintains navigation structure on home route', () => {
-      renderWithRouter('/');
-
-      expect(screen.getByRole('navigation')).toBeInTheDocument();
-      expect(screen.getByRole('main')).toBeInTheDocument();
-    });
-
-    it('maintains navigation structure on about route', () => {
-      renderWithRouter('/about');
-
-      expect(screen.getByRole('navigation')).toBeInTheDocument();
-      expect(screen.getByRole('main')).toBeInTheDocument();
-    });
-  });
-
   describe('Accessibility', () => {
     it('has semantic landmarks', () => {
-      renderWithRouter();
+      renderLayout();
 
       expect(screen.getByRole('navigation')).toBeInTheDocument();
       expect(screen.getByRole('main')).toBeInTheDocument();
     });
 
     it('navigation is properly labeled', () => {
-      renderWithRouter();
+      renderLayout();
 
       const nav = screen.getByRole('navigation');
       expect(nav).toBeInTheDocument();
     });
 
     it('all interactive elements are accessible', () => {
-      renderWithRouter();
+      renderLayout();
 
       const links = screen.getAllByRole('link');
       links.forEach((link) => {

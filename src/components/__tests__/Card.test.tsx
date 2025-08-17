@@ -74,9 +74,9 @@ describe('Card Component', () => {
       await waitFor(() => {
         const image = screen.getByAltText('pikachu');
         expect(image).toBeInTheDocument();
-        expect(image).toHaveAttribute(
-          'src',
-          mockPokemonDetails.sprites.front_default
+        // Next.js Image component transforms URLs, so we check if the original URL is contained
+        expect(image.getAttribute('src')).toContain(
+          encodeURIComponent(mockPokemonDetails.sprites.front_default)
         );
       });
     });

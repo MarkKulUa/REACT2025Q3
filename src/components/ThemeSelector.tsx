@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { useTheme } from '../hooks/useTheme';
 import type { Theme } from '../contexts/ThemeContextDef';
