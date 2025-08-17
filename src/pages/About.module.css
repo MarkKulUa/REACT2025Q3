@@ -30,8 +30,9 @@
   flex: 1;
 }
 
-.themeSelectorContainer {
+.controls {
   display: flex;
+  gap: 1rem;
   align-items: center;
 }
 
@@ -186,7 +187,7 @@
     margin-bottom: 1rem;
   }
 
-  .themeSelectorContainer {
+  .controls {
     margin-top: 1rem;
   }
 
