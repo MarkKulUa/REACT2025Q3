@@ -3,7 +3,6 @@ import type { ReactElement } from 'react';
 import { render as originalRender } from '@testing-library/react';
 import type { RenderOptions } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import selectedItemsReducer from '../store/slices/selectedItemsSlice';
 import type { RootState } from '../store/store';
@@ -25,9 +24,7 @@ export const createTestStore = (preloadedState?: Partial<RootState>) => {
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   preloadedState?: Partial<RootState>;
   store?: ReturnType<typeof createTestStore>;
-  initialEntries?: string[];
   needsProviders?: boolean;
-  needsRouter?: boolean;
 }
 
 const customRender = (
@@ -35,9 +32,7 @@ const customRender = (
   {
     preloadedState = {},
     store = createTestStore(preloadedState),
-    initialEntries = ['/'],
     needsProviders = true,
-    needsRouter = true,
     ...renderOptions
   }: CustomRenderOptions = {}
 ) => {
@@ -45,21 +40,11 @@ const customRender = (
     return originalRender(ui, renderOptions);
   }
 
-  const Wrapper = ({ children }: { children: React.ReactNode }) => {
-    const content = (
-      <Provider store={store}>
-        <ThemeProvider>{children}</ThemeProvider>
-      </Provider>
-    );
-
-    if (needsRouter) {
-      return (
-        <MemoryRouter initialEntries={initialEntries}>{content}</MemoryRouter>
-      );
-    }
-
-    return content;
-  };
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <Provider store={store}>
+      <ThemeProvider>{children}</ThemeProvider>
+    </Provider>
+  );
 
   return {
     store,
