@@ -1,0 +1,71 @@
+{
+  "layout": {
+    "title": "Pokémon App"
+  },
+  "header": {
+    "title": "Pokémon App",
+    "about": "About",
+    "pokemon": "Pokémon",
+    "theme": {
+      "toggle": "Toggle Theme",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "language": {
+      "toggle": "Toggle Language",
+      "english": "English",
+      "spanish": "Español"
+    }
+  },
+  "search": {
+    "title": "Pokémon Search",
+    "placeholder": "Search Pokémon...",
+    "button": "Search",
+    "noResults": "No Pokémon found",
+    "loading": "Loading...",
+    "error": "Error loading Pokémon"
+  },
+  "pokemon": {
+    "details": "Details",
+    "height": "Height",
+    "weight": "Weight",
+    "types": "Types",
+    "abilities": "Abilities",
+    "stats": "Stats",
+    "close": "Close",
+    "select": "Select",
+    "selected": "Selected"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of"
+  },
+  "selectedItems": {
+    "title": "Selected Pokémon",
+    "count": "Selected: {count}",
+    "clear": "Clear All",
+    "download": "Download CSV",
+    "empty": "No Pokémon selected"
+  },
+  "about": {
+    "title": "About",
+    "description": "This is a Pokémon search application built with Next.js and the PokéAPI.",
+    "features": {
+      "title": "Features",
+      "search": "Search and browse Pokémon",
+      "details": "View detailed Pokémon information",
+      "selection": "Select and manage favorite Pokémon",
+      "export": "Export selected Pokémon to CSV",
+      "themes": "Light and dark theme support",
+      "responsive": "Responsive design for all devices"
+    }
+  },
+  "errors": {
+    "notFound": "Page Not Found",
+    "general": "Something went wrong",
+    "tryAgain": "Try Again",
+    "goHome": "Go Home"
+  }
+}
